@@ -19,6 +19,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname,'scripts')));
+app.use(express.static(path.join(__dirname,'badges')));
+
+// Ruta para cargar las medallas y los puntos
+app.get('/leaderboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'leaderboard.html'));
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
