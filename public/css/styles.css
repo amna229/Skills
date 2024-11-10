@@ -89,9 +89,9 @@ h1 {
     stroke-width: 1px;
 }
 
-.selected .hexagon {
+/*.selected .hexagon {
     fill: var(--selected-color, yellow);
-}
+}*/
 
 @media print {
     .color-picker {
@@ -114,4 +114,41 @@ footer {
     text-align: center;
     background-color: #f0f0f0; /* Light background color */
     border-top: 1px solid #ccc; /* Border on top */
+}
+
+/* Estilos generales para la tabla */
+#leaderboard {
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin: 0 auto;
+}
+
+/* Estilos para las celdas y encabezados de la tabla */
+#leaderboard th, #leaderboard td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+/* Color de fondo para el encabezado */
+#leaderboard th {
+    background-color: #c0c0c0;
+    color: black;
+    font-weight: bold;
+}
+
+/* Alternar el color de fondo para filas */
+#leaderboard tr:nth-child(odd) {
+    background-color: #e0e0e0;
+}
+
+#leaderboard td:nth-child(1) {
+    text-align: left;
+    width: 250px;
+}
+#leaderboard td:nth-child(2) {
+    width: 200px;
+}
+#leaderboard td:nth-child(3) {
+    width: 200px;
 }
