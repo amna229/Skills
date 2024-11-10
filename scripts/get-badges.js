@@ -4,12 +4,15 @@ const https = require('https');
 
 const baseURL = 'https://raw.githubusercontent.com/Obijuan/digital-electronics-with-open-FPGAs-tutorial/master/rangos/png/';
 
+//directorio donde se guardarán los iconos
 const directory = path.join(__dirname, '../badges');
 
 async function extractBadgesNames() {
     try {
-        const data = fs.readFileSync(path.join(__dirname, '../badges.json'));
+        const data = fs.readFileSync(path.join(__dirname, 'badges.json'), 'utf-8');
         const badges = JSON.parse(data);
+        
+        // Extraer nombres de imágenes
         return badges.map(badge => badge.png);
     }catch (error){
         console.error('Error al leer badges.json:', error);
