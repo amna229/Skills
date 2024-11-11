@@ -83,6 +83,37 @@ h1 {
     position: relative;
 }
 
+.svg-wrapper.hovered{
+
+    transform: scale(1.2);
+    transition: transform 0.3s ease-in-out;
+
+}
+
+.icon-canvas {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.footer{
+    background-color: #f4dc8b;
+    padding: 10px;
+    border-top: 2px solid black;
+    text-align: center;
+    position: fixed;
+}
+
+.input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    z-index:10;
+}
+
 .hexagon {
     fill: white;
     stroke: black;

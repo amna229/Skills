@@ -47,6 +47,80 @@ document.addEventListener("DOMContentLoaded", () =>{
                 svg.appendChild(image);
                 svgWrapper.appendChild(svg);
                 svgContainer.appendChild(svgWrapper);
+
+
+                //punto 4
+                const canvas = document.createElement('canvas');
+                canvas.width = 100;
+                canvas.height = 100;
+                canvas.classList.add('icon-canvas');
+                svgWrapper.appendChild(canvas);
+
+                const context = canvas.getContext('2d');
+                const pencilIcon = new Image();
+                const notebookIcon = new Image();
+
+                pencilIcon.src = '../electronics/pencil.svg';
+                notebookIcon.src = '../electronics/notebook.svg';
+
+                pencilIcon.onload = () => {
+                    context.drawImage(pencilIcon, 10, 70, 20, 20);
+
+                    canvas.addEventListener("click", (event) => {
+                        //alert('You clicked on the pencil icon');
+
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = skill.text;
+                        input.classList.add('input');
+                        svgWrapper.appendChild(input);
+                        input.focus();
+
+                        input.addEventListener('blur', () => {
+                            skill.text = input.value;
+                            svgWrapper.removeChild(input);
+                            const tspan = text.querySelectorAll('tspan');
+                            tspan.forEach((tspan, index) => {
+                                tspan.textContent = skill.text.split('/n')[index];
+                            });
+                        });
+                    });
+                };
+
+                notebookIcon.onload = () => {
+                    context.drawImage(notebookIcon, 70, 70, 20, 20);
+                    canvas.addEventListener("click", (event) => {
+
+                        localStorage.setItem('actSkillText', skill.text);
+                        window.open('/especificacionesComp.html', '_blank');
+
+                    });
+
+
+                };
+
+                svgWrapper.addEventListener("mouseover", () => {
+
+                    svgWrapper.classList.add("hovered");
+                    canvas.style.display = 'block';
+
+                    const footer= document.createElement('footer');
+                    footer.textContent = 'description of the skill'+skill.id +' '+ skill.description;
+                    footer.classList.add('footer');
+                    svgContainer.appendChild(footer);
+
+                });
+                svgWrapper.addEventListener("mouseout", () => {
+
+                    svgWrapper.classList.remove("hovered");
+                    canvas.style.display = 'none';
+                    const footer = document.querySelector('.footer');
+                    if(footer) footer.remove();
+
+                });
+
+
+
             });
         }).catch(error => console.error("Error loading skills: ", error));
 });
