@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () =>{
                 image.setAttribute("y", "60%");
                 image.setAttribute("width", "30");
                 image.setAttribute("height", "30");
-                image.setAttribute("href",`${skill.icon}`);
+                image.setAttribute('href',`${skill.icon}`);
 
                 svg.appendChild(polygon);
                 svg.appendChild(text);
@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () =>{
                     context.drawImage(pencilIcon, 10, 70, 20, 20);
 
                     canvas.addEventListener("click", (event) => {
-                        //alert('You clicked on the pencil icon');
 
                         const input = document.createElement('input');
                         input.type = 'text';
@@ -91,8 +90,13 @@ document.addEventListener("DOMContentLoaded", () =>{
                     context.drawImage(notebookIcon, 70, 70, 20, 20);
                     canvas.addEventListener("click", (event) => {
 
-                        localStorage.setItem('actSkillText', skill.text);
-                        window.open('/especificacionesComp.html', '_blank');
+                        localStorage.setItem('actSkill', JSON.stringify(skill));
+
+                        //para pasarle el hexagono como imagen
+                        const svgData = new XMLSerializer().serializeToString(svg);
+                        localStorage.setItem(`skillsvg${skill.id}`, svgData);
+
+                       window.open('/especificacionesComp.html', '_blank');
 
                     });
 

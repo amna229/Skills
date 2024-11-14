@@ -114,6 +114,13 @@ h1 {
     z-index:10;
 }
 
+.header{
+
+    padding: 10px;
+    text-align:left;
+}
+
+
 .hexagon {
     fill: white;
     stroke: black;
