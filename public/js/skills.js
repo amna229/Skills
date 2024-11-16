@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () =>{
                         const svgData = new XMLSerializer().serializeToString(svg);
                         localStorage.setItem(`skillsvg${skill.id}`, svgData);
 
-                       window.open('/especificacionesComp.html', '_blank');
+                       window.open('/especificacionesComp', '_blank');
 
                     });
 
