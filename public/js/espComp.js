@@ -2,12 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let skill = localStorage.getItem('actSkill');
 
     if (skill) {
-
         skill = JSON.parse(skill);
 
         let skillText = skill.text.replace(/\n/g, ' ');
         document.getElementById('skilltxt').innerHTML = '<strong>Skill: ' + skillText + '</strong>';
-        document.getElementById('skillDesc').innerText = 'space for the description of the skill: ' + skill.description;
+        document.getElementById('skillDesc').innerText = 'Space for the description of the skill: ' + skill.description;
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', "svg");
         svg.setAttribute("width", "100");
@@ -57,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
         svg.appendChild(text);
         svg.appendChild(image);
         document.getElementById('skillImage').replaceWith(svg);
-
     }
 
     let checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -69,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 confetti({
                     particleCount: 250,
                     spread: 100,
-                    origin: {y: 0.6}
+                    origin: { y: 0.6 }
                 });
                 document.getElementById('evidenceForm').style.display = 'block';
                 document.getElementById('evidenceTitle').style.display = 'block';
@@ -80,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     window.addEventListener('unload', () => {
-        localStorage.clear();
+        localStorage.removeItem('actSkill'); // Clear only the active skill data
     });
 
     window.addEventListener("load", () => {
@@ -88,6 +86,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const evidenceInput = document.getElementById("evidenceInput");
         const unverifiedSubmissions = document.getElementById("unverifiedSubmissions");
         const unverifiedContainer = document.getElementById("unverified-evidences-container");
+
+        // Load evidence data from localStorage
+        const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
+        const currentSkillEvidence = evidenceData[skill.id] || []; // Access evidence for the current skill
+
+        if (currentSkillEvidence.length > 0) {
+            unverifiedContainer.style.display = "block";
+            currentSkillEvidence.forEach(evidenceEntry => {
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                <td>${evidenceEntry.user || "Unknown User"}</td>
+                <td>${evidenceEntry.evidence}</td>
+                <td>
+                    <button class="btn btn-success btn-sm">Approve</button>
+                    <button class="btn btn-danger btn-sm">Reject</button>
+                </td>
+                `;
+                unverifiedSubmissions.appendChild(newRow);
+            });
+        }
 
         evidenceButton.addEventListener("click", (event) => {
             event.preventDefault();
@@ -98,19 +116,80 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const user = "Current User"; // Replace with actual user information in future updates to the code
+            // Retrieve or initialize evidenceData
+            const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
+            const skillEvidence = evidenceData[skill.id] || [];
+
+            // Check for duplicates
+            if (skillEvidence.some(e => e.evidence === evidenceText)) {
+                alert("This evidence already exists.");
+                return;
+            }
+
+            // Add the new evidence for the current skill
+            skillEvidence.push({ evidence: evidenceText, user: "Current User" }); // Store as an object
+            evidenceData[skill.id] = skillEvidence;
+
+            // Save updated evidenceData to localStorage
+            localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
+
+            // Dynamically add the new evidence to the table
             const newRow = document.createElement("tr");
             newRow.innerHTML = `
-            <td>${user}</td>
+            <td>Current User</td>
             <td>${evidenceText}</td>
             <td>
                 <button class="btn btn-success btn-sm">Approve</button>
                 <button class="btn btn-danger btn-sm">Reject</button>
             </td>
-        `;
+            `;
             unverifiedSubmissions.appendChild(newRow);
+
+            // Clear input and ensure the unverified container is visible
             evidenceInput.value = "";
-            unverifiedContainer.style.display = "block"; // Show unverified evidences now that an evidence has been added
+            unverifiedContainer.style.display = "block";
+
+            // Show confirmation
+            alert(`Evidence added for skill: ${skill.text}`);
+        });
+
+        unverifiedSubmissions.addEventListener("click", (event) => {
+            if (event.target.classList.contains("btn-success") || event.target.classList.contains("btn-danger")) {
+                const row = event.target.closest("tr");
+                const evidenceText = row.children[1].innerText;
+
+                // Retrieve evidenceData from localStorage
+                const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
+                const skillEvidence = evidenceData[skill.id] || [];
+
+                // Find the evidence entry and update its status
+                const updatedEvidence = skillEvidence.map(evidence => {
+                    if (evidence.evidence === evidenceText) {
+                        if (event.target.classList.contains("btn-success")) {
+                            evidence.accepted = true; // Flag evidence as accepted
+                            alert("Evidence accepted!");
+                        } else {
+                            alert("Evidence rejected!");
+                        }
+                        return null; // Exclude this evidence from the list
+                    }
+                    return evidence; // Keep other evidence entries
+                }).filter(evidence => evidence !== null); // Remove null entries
+
+                // Update evidenceData for the skill
+                if (updatedEvidence.length > 0) {
+                    evidenceData[skill.id] = updatedEvidence;
+                } else {
+                    delete evidenceData[skill.id];
+                    unverifiedContainer.style.display = "none";
+                }
+
+                // Save the updated evidenceData back to localStorage
+                localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
+
+                // Remove the row from the table
+                row.remove();
+            }
         });
     });
 });
