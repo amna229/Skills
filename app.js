@@ -26,6 +26,11 @@ app.get('/leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'leaderboard.html'));
 });
 
+// Ruta para cargar especificacionesComp
+app.get('/especificacionesComp', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'especificacionesComp.html'));
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
