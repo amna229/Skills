@@ -82,4 +82,35 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('unload', () => {
         localStorage.clear();
     });
+
+    window.addEventListener("load", () => {
+        const evidenceButton = document.getElementById("evidenceButton");
+        const evidenceInput = document.getElementById("evidenceInput");
+        const unverifiedSubmissions = document.getElementById("unverifiedSubmissions");
+        const unverifiedContainer = document.getElementById("unverified-evidences-container");
+
+        evidenceButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            const evidenceText = evidenceInput.value.trim();
+
+            if (evidenceText === "") {
+                alert("Please enter evidence before submitting.");
+                return;
+            }
+
+            const user = "Current User"; // Replace with actual user information in future updates to the code
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+            <td>${user}</td>
+            <td>${evidenceText}</td>
+            <td>
+                <button class="btn btn-success btn-sm">Approve</button>
+                <button class="btn btn-danger btn-sm">Reject</button>
+            </td>
+        `;
+            unverifiedSubmissions.appendChild(newRow);
+            evidenceInput.value = "";
+            unverifiedContainer.style.display = "block"; // Show unverified evidences now that an evidence has been added
+        });
+    });
 });
