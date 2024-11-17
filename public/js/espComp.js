@@ -76,10 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    window.addEventListener('unload', () => {
-        localStorage.removeItem('actSkill'); // Clear only the active skill data
-    });
-
     window.addEventListener("load", () => {
         const evidenceButton = document.getElementById("evidenceButton");
         const evidenceInput = document.getElementById("evidenceInput");

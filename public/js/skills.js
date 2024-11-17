@@ -211,5 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener('unload', () => {
         localStorage.removeItem('allSkillsInfo');
+        localStorage.removeItem('actSkill');
     });
 });
