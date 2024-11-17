@@ -127,6 +127,44 @@ h1 {
     stroke-width: 1px;
 }
 
+.hexagon-completed-skill {
+    fill: limegreen;
+    stroke: black;
+    stroke-width: 1px;
+}
+
+.red-circle {
+    position: absolute;
+    top: -5px;
+    right: 75px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    display: none; /* Hidden by default */
+}
+
+.green-circle {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: green;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    display: none; /* Hidden by default */
+}
+
 /*.selected .hexagon {
     fill: var(--selected-color, yellow);
 }*/
