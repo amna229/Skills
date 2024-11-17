@@ -1,10 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
-    let skill = localStorage.getItem('actSkill');
+    let actSkill = localStorage.getItem('actSkill');
+    let skill = null;
+
+    const allSkillsInfo = JSON.parse(localStorage.getItem('allSkillsInfo'));
+    console.log(allSkillsInfo);
+
+    for(let i = 0; i < allSkillsInfo.length; i++) {
+        if (allSkillsInfo[i].id == actSkill) {
+            skill = allSkillsInfo[i];
+            break;
+        }
+    }
 
     if (skill) {
-        skill = JSON.parse(skill);
 
-        let skillText = skill.text.replace(/\n/g, ' ');
+        let skillText = skill.text;
         document.getElementById('skilltxt').innerHTML = '<strong>Skill: ' + skillText + '</strong>';
         document.getElementById('skillDesc').innerText = 'Space for the description of the skill: ' + skill.description;
 
@@ -24,19 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
         text.setAttribute("fill", "black");
         text.setAttribute("font-size", "10");
 
-        const words = skillText.split(' ');
-        let line = '';
-        skillText = [];
-
-        words.forEach(word => {
-            if ((line + word).length > 10) {
-                skillText.push(line.trim());
-                line = '';
-            }
-            line += `${word} `;
-        });
-
-        skillText.forEach((line, index) => {
+        const content = skill.text.split('\n');
+        content.forEach((line, index) => {
             const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
             tspan.setAttribute("x", "50%");
             tspan.setAttribute("dy", index ? "1.2em" : "1em");

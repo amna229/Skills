@@ -61,6 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
 
+            const allSkillsInfo=[];
+
             skills.forEach(skill => {
                 const svgWrapper = document.createElement('div');
                 svgWrapper.classList.add('svg-wrapper');
@@ -83,6 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 text.setAttribute("text-anchor", "middle");
                 text.setAttribute("fill", "black");
                 text.setAttribute("font-size", "10");
+
+                allSkillsInfo.push(skill);
 
                 const content = skill.text.split('\n');
                 content.forEach((line, index) => {
@@ -137,48 +141,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 pencilIcon.onload = () => {
                     context.drawImage(pencilIcon, 10, 70, 20, 20);
-
-                    canvas.addEventListener("click", (event) => {
-
-                        const isVerified = polygon.classList.contains("hexagon-completed-skill");
-                        if (!isVerified) {
-                            const input = document.createElement('input');
-                            input.type = 'text';
-                            input.value = skill.text;
-                            input.classList.add('input');
-                            svgWrapper.appendChild(input);
-                            input.focus();
-
-
-                        input.addEventListener('blur', () => {
-                            skill.text = input.value;
-                            svgWrapper.removeChild(input);
-                            const tspan = text.querySelectorAll('tspan');
-                            tspan.forEach((tspan, index) => {
-                                tspan.textContent = skill.text.split('/n')[index];
-                            });
-                        });
-                    }
-                    });
-
                 };
 
                 notebookIcon.onload = () => {
                     context.drawImage(notebookIcon, 70, 70, 20, 20);
+
                     canvas.addEventListener("click", (event) => {
-                        const isVerified = polygon.classList.contains("hexagon-completed-skill");
-                        if (!isVerified) {
-                            localStorage.setItem('actSkill', JSON.stringify(skill));
 
-                            // Save the hexagon as an SVG
-                            const svgData = new XMLSerializer().serializeToString(svg);
-                            localStorage.setItem(`skillsvg${skill.id}`, svgData);
+                        const rect = canvas.getBoundingClientRect();
+                        const scaleX = canvas.width / rect.width;
+                        const scaleY = canvas.height / rect.height;
+                        const x = (event.clientX - rect.left) * scaleX;
+                        const y = (event.clientY - rect.top) * scaleY;
 
+                        const notebookBounds = {
+                            x: 70,
+                            y: 70,
+                            width: 20,
+                            height: 20
+                        };
 
+                        const whenClickNb = x >= notebookBounds.x && x <= notebookBounds.x + notebookBounds.width && y >= notebookBounds.y && y <= notebookBounds.y + notebookBounds.height;
+
+                        if (whenClickNb) {
+                            const isVerified = polygon.classList.contains("hexagon-completed-skill");
+                            if (!isVerified) {
+                                localStorage.setItem('actSkill', skill.id);
+                                const svgData = new XMLSerializer().serializeToString(svg);
+                                localStorage.setItem(`skillsvg${skill.id}`, svgData);
                                 window.open('/especificacionesComp', '_blank');
+                            }
                         }
                     });
                 };
+
 
                 svgWrapper.addEventListener("mouseover", () => {
                     const isVerified = polygon.classList.contains("hexagon-completed-skill");
@@ -207,6 +203,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 updateCountBadge(skill.id);
 
             });
+
+            localStorage.setItem('allSkillsInfo', JSON.stringify(allSkillsInfo));
+
         })
         .catch(error => console.error("Error loading skills: ", error));
+
+    window.addEventListener('unload', () => {
+        localStorage.removeItem('allSkillsInfo');
+    });
 });
