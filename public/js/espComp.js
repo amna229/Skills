@@ -156,17 +156,26 @@ document.addEventListener("DOMContentLoaded", () => {
         unverifiedSubmissions.addEventListener("click", (event) => {
             if (event.target.classList.contains("btn-success") || event.target.classList.contains("btn-danger")) {
                 const row = event.target.closest("tr");
-                const evidenceText = row.children[1].innerText;
+                const evidenceText = row.children[1]?.textContent.trim(); // Ensure textContent is properly retrieved and trimmed
+
+                if (!evidenceText) {
+                    console.error("Unable to retrieve evidence text from the row.");
+                    return; // Exit if evidenceText is undefined
+                }
 
                 // Retrieve evidenceData from localStorage
                 const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
+                const skillData = JSON.parse(localStorage.getItem('skillData')) || {}; // Retrieve skill data to store verified status
                 const skillEvidence = evidenceData[skill.id] || [];
 
                 // Find the evidence entry and update its status
+                let skillVerified = false; // Track whether the skill should be marked as verified
+
                 const updatedEvidence = skillEvidence.map(evidence => {
                     if (evidence.evidence === evidenceText) {
                         if (event.target.classList.contains("btn-success")) {
                             evidence.accepted = true; // Flag evidence as accepted
+                            skillVerified = true; // Mark skill as verified if any evidence is accepted
                             alert("Evidence accepted!");
                         } else {
                             alert("Evidence rejected!");
@@ -186,6 +195,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Save the updated evidenceData back to localStorage
                 localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
+
+                // If skill should be verified, update its status
+                if (skillVerified) {
+                    console.log(skillVerified);
+                    skillData[skill.id] = { ...skillData[skill.id], verified: true }; // Add or update verified status
+                    localStorage.setItem('skillData', JSON.stringify(skillData)); // Save updated skill data
+                }
 
                 // Remove the row from the table
                 row.remove();
