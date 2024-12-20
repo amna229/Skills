@@ -3,11 +3,31 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const session = require('express-session');
 
-var indexRouter = require('./routes/index');
+var skillsRouter = require('./routes/skills');
 var usersRouter = require('./routes/users');
+//var adminRouter = require('./routes/admin');
 
 var app = express();
+
+// Conectar con la base de datos de MongoDB
+mongoose.connect('mongodb://localhost:27017/skills', {
+})
+    .then(() => console.log('Conectado a MongoDB'))
+    .catch((err) => console.error('Error de conexión a MongoDB:', err));
+
+// Middleware
+app.use(bodyParser.json());
+
+// Middleware para manejar sesiones
+app.use(session({
+  secret: 'mysecretkey',  // Una clave secreta para firmar la sesión
+  resave: false,          // No resguardar la sesión si no ha cambiado
+  saveUninitialized: true // No guardar sesiones no inicializadas
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,8 +51,24 @@ app.get('/especificacionesComp', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'especificacionesComp.html'));
 });
 
-app.use('/', indexRouter);
+// Ruta para cargar login
+app.get('/users/login', (req, res) => {
+  const mensajeLogout = req.query.mensajeLogout;
+  res.render('login', { mensajeLogout });
+});
+
+// Ruta para cargar register
+app.get('/users/register', (req, res) => {
+  res.render('register');
+});
+
+app.get('/:skillTreeName/edit/:skillID', (req, res) => {
+  res.render('editSkill');
+});
+
 app.use('/users', usersRouter);
+app.use('/skills', skillsRouter);
+//app.use('/admin', adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

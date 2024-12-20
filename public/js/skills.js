@@ -141,6 +141,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 pencilIcon.onload = () => {
                     context.drawImage(pencilIcon, 10, 70, 20, 20);
+
+                    canvas.addEventListener("click", (event) => {
+
+                        const rect = canvas.getBoundingClientRect();
+                        const scaleX = canvas.width / rect.width;
+                        const scaleY = canvas.height / rect.height;
+                        const x = (event.clientX - rect.left) * scaleX;
+                        const y = (event.clientY - rect.top) * scaleY;
+
+                        const pencilBounds = {
+                            x: 10,
+                            y: 70,
+                            width: 20,
+                            height: 20
+                        };
+
+                        const whenClickP = x >= pencilBounds.x && x <= pencilBounds.x + pencilBounds.width && y >= pencilBounds.y && y <= pencilBounds.y + pencilBounds.height;
+
+                        if (whenClickP) {
+                            const isVerified = polygon.classList.contains("hexagon-completed-skill");
+                            if (!isVerified) {
+                                localStorage.setItem('actSkill', skill.id);
+                                const svgData = new XMLSerializer().serializeToString(svg);
+                                localStorage.setItem(`skillsvg${skill.id}`, svgData);
+                                window.open('/:skillTreeName/edit/:skillID', '_blank');
+                            }
+                        }
+                    });
                 };
 
                 notebookIcon.onload = () => {

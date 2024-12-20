@@ -228,3 +228,185 @@ footer {
 #leaderboard td:nth-child(3) {
     width: 200px;
 }
+
+.login-body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f9f9f9;
+}
+
+.login-container {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.login-container h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.login-container label {
+    color: #474747;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: left; /* Asegura que el texto esté alineado a la izquierda */
+    display: block;   /* Hace que el texto ocupe toda la línea encima del input */
+    margin-bottom: 5px;
+}
+
+.login-container p {
+    color: #000;
+    font-size: 14px;
+}
+.login-container p a {
+    color: #4285F4;
+    text-decoration: none;
+    font-weight: bold; /* Opcional: resaltar el enlace */
+}
+
+.login-container p a:hover {
+    text-decoration: underline;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.login-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-container button:hover {
+    background-color: #357ae8;
+}
+
+.login-container a:hover {
+    text-decoration: underline;
+}
+
+header {
+    background-color: #f4dc8b; /* Fondo amarillo */
+    padding: 10px 10px; /* Espaciado interno */
+    display: flex;
+    justify-content: flex-end; /* Alinear a la derecha */
+    align-items: center; /* Centrar verticalmente */
+    margin-bottom: 20px; /* Separación con el contenido siguiente */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para un efecto visual */
+}
+
+header nav {
+    font-size: 12px; /* Tamaño de letra del menú */
+}
+
+header nav a {
+    text-decoration: none; /* Sin subrayado */
+    color: #333; /* Color del texto */
+    margin-left: 2px; /* Espaciado entre enlaces */
+}
+
+header nav a:hover {
+    text-decoration: underline; /* Subrayado al pasar el mouse */
+    color: #000; /* Color más oscuro */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 12px; /* Tamaño del título más pequeño */
+    color: #333;
+}
+
+header nav a {
+    color: #007BFF;
+    text-decoration: none;
+    margin-right: 2px;
+}
+
+
+textarea,
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.btn.save {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.btn.cancel {
+    background-color: #ffc107;
+    color: #fff;
+}
+
+.btn.delete {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Container for the form */
+.container-edit {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    max-width: 600px; /* Ancho máximo */
+    width: 100%; /* Asegurar que no sobrepase el contenedor */
+    box-sizing: border-box; /* Incluir padding dentro del ancho */
+    margin: 0 auto; /* Centrar en la página */
+}
+
+.container-edit label{
+    font-weight: bold;
+}
+
+.container-edit textarea{
+    margin-bottom: 10px;
+}
+
+.container-edit input{
+    margin-bottom: 10px;
+}

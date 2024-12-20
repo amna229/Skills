@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="login-body">
+        <div class="login-container">
+            <% if (typeof mensajeLogout !== 'undefined') { %>
+                <p style="color: blue;"><%= mensajeLogout %></p>
+            <% } %>
+            <h1>Login</h1>
+            <p>Please log in to view that resource</p>
+            <form action="/users/login" method="POST">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <label for="password">Password:</label>
+                <input type="password" id=password name="password" required>
+                <button type="submit">Login</button>
+
+                <% if (typeof error !== 'undefined') { %>
+                    <p style="color: red;"><%= error %></p>
+                <% } %>
+            </form>
+            <p>
+                Don't have an account?
+                <a href="/users/register">Register here</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
