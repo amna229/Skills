@@ -9,20 +9,18 @@
 </head>
 <body>
 <%- include('partials/header', { title: 'Welcome, admin!'}) %>
-<h1>Edit Skill: Learn to use a breadboard</h1>
+<h1>Edit Skill: <%= skill.text %></h1>
   <div class="container-edit">
       <div class="col-md-3">
-          <img id="skillImage" src="" alt="Skill Icon" style="width: 100px; height: 100px;">
+          <img id="skillImage" src="<%= skill.icon %>" alt="Skill Icon" style="width: 100px; height: 100px;">
       </div>
       <div class="col-md-9">
         <label for="skill-text">Skill Text:</label>
-        <textarea id="skill-text" name="skillText" rows="2">Learn to use a breadboard</textarea>
+        <textarea id="skill-text" name="skillText" rows="2"><%= skill.text %></textarea>
       </div>
       <form id="edit-skill-form" enctype="multipart/form-data" action="/skills/save" method="POST">
           <label for="description">Description:</label>
-          <textarea id="description" name="description" rows="4">
-Discover the convenience of breadboards for prototyping circuits without soldering, allowing for easy experimentation.
-          </textarea>
+          <textarea id="description" name="description" rows="4"><%= skill.description %></textarea>
 
           <label for="tasks">Tasks to Complete (one per line):</label>
           <textarea id="tasks" name="tasks" rows="4"></textarea>

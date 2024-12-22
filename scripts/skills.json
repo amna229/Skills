@@ -3,408 +3,476 @@
     "id": "1",
     "text": "Light up an\nLED for the first \ntime",
     "icon": "/electronics/icons/icon1.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "2",
     "text": "Learn to\nuse wire strippers",
     "icon": "/electronics/icons/icon2.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "3",
     "text": "Complete\nan electronics kit",
     "icon": "/electronics/icons/icon3.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "4",
     "text": "Learn to Solder",
     "icon": "/electronics/icons/icon4.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "5",
     "text": "Learn to use\na breadboard",
     "icon": "/electronics/icons/icon5.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "6",
     "text": "Get a circuit\nwrong and try\nagain",
     "icon": "/electronics/icons/icon6.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "7",
     "text": "Learn Ohm’s\nLaw",
     "icon": "/electronics/icons/icon7.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "8",
     "text": "Fix something\nsomething\nthat’s broken",
     "icon": "/electronics/icons/icon8.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "9",
     "text": "Measure \nvoltage with \na multimeter",
     "icon": "/electronics/icons/icon9.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "10",
     "text": "Learn to\nread a schematic",
     "icon": "/electronics/icons/icon10.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "11",
     "text": "Learn to read\na datasheet",
     "icon": "/electronics/icons/icon11.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "12",
     "text": "Learn to\ncontrol the \nbrightness of\n an LED",
     "icon": "/electronics/icons/icon12.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "13",
     "text": "Learn to \ndesolder a   \nthrough hole\ncomponent",
     "icon": "/electronics/icons/icon4.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "14",
     "text": "Make  \nsomething that \nmakes noise",
     "icon": "/electronics/icons/icon14.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "15",
     "text": "Turn a  \nbreadboard \ncircuit into a  \nschematic",
     "icon": "/electronics/icons/icon10.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "16",
     "text": "Measure \ncurrent with a  \nmultimeter",
     "icon": "/electronics/icons/icon9.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "17",
     "text": "Make a voltage \ndivider to lower  \nthe voltage  \nfor a project",
     "icon": "/electronics/icons/icon17.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "18",
     "text": "Turn \nsomething  \non using  \na sensor",
     "icon": "/electronics/icons/icon18.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "19",
     "text": "Use a diode \nprotect your  \ncircuit from  \nreverse voltages",
     "icon": "/electronics/icons/icon19.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "20",
     "text": "Make an \noscillator that\nmakes noise",
     "icon": "/electronics/icons/icon14.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "21",
     "text": "Use a relay \nto switch\nsomething on at\na higher voltage",
     "icon": "/electronics/icons/icon21.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "22",
     "text": "Make a \n capacitor rocket\n (too much voltage)",
     "icon": "/electronics/icons/icon22.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "23",
     "text": "Learn to \n solder surfcace\n mount parts",
     "icon": "/electronics/icons/icon23.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "24",
     "text": "Use a \n  555 timer\n in a circuit",
     "icon": "/electronics/icons/icon24.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "25",
     "text": "Make a sound \n louder with an\namplifier",
     "icon": "/electronics/icons/icon14.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "26",
     "text": "Use  \naddressable \n RGB LEDs in a \nproject",
     "icon": "/electronics/icons/icon12.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "27",
     "text": "Make a  \nproject \n with a  \nRaspberry Pi",
     "icon": "/electronics/icons/icon27.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "28",
     "text": "Let the \nsmoke out \n accidentally",
     "icon": "/electronics/icons/icon28.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "29",
     "text": "Use fritzing \nor TinkerCAD \n to create a  \n circuit diagram",
     "icon": "/electronics/icons/icon29.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "30",
     "text": "Make \nsomething \n with Arduino",
     "icon": "/electronics/icons/icon30.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "31",
     "text": "Let the smoke \nout of an Arduino \n accidentally",
     "icon": "/electronics/icons/icon31.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "32",
     "text": "Measure \nfrequency with a \n multimeter",
     "icon": "/electronics/icons/icon9.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "33",
     "text": "Use an \nOp-Amp  in\n  a circuit",
     "icon": "/electronics/icons/icon33.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "34",
     "text": "Use a crowbar\ncircuit to protect\n against over voltage",
     "icon": "/electronics/icons/icon17.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "35",
     "text": "Use a surge\ndiode to protect\n a circuit",
     "icon": "/electronics/icons/icon19.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "36",
     "text": "Make\nsomething\n for a friend",
     "icon": "/electronics/icons/icon36.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "37",
     "text": "Make a motor\ncontroller with\n a H Bridge",
     "icon": "/electronics/icons/icon37.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "38",
     "text": "Make a\ncounter with\n logic gates",
     "icon": "/electronics/icons/icon38.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "39",
     "text": "Apply solder\npaste to a PCB\n with a stencil",
     "icon": "/electronics/icons/icon39.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "40",
     "text": "Teach a\nfriend an\n electronics skill",
     "icon": "/electronics/icons/icon40.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "41",
     "text": "Make something\nwith a 7\n segment display",
     "icon": "/electronics/icons/icon41.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "42",
     "text": "Measure\nvoltage with an\n oscilloscope",
     "icon": "/electronics/icons/icon42.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "43",
     "text": "Measure\ncapacitor equivalent\n series resistance",
     "icon": "/electronics/icons/icon43.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "44",
     "text": "Make an\nInternet of Things\n  (IoT) project",
     "icon": "/electronics/icons/icon44.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "45",
     "text": "Make \nsomething with\n solar panels",
     "icon": "/electronics/icons/icon45.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "46",
     "text": "Look at an \n audio input\non an oscilloscope",
     "icon": "/electronics/icons/icon46.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "47",
     "text": "Make a \n regulated\npower supply",
     "icon": "/electronics/icons/icon47.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "48",
     "text": "Use a MOSFET \n instead of a relay\nin a project",
     "icon": "/electronics/icons/icon48.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "49",
     "text": "Make your \n own\nUSB cable",
     "icon": "/electronics/icons/icon49.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "50",
     "text": "Use an LED \n matrix in\na project",
     "icon": "/electronics/icons/icon50.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "51",
     "text": "Filter \n  unwanted noise\nfrom a signal",
     "icon": "/electronics/icons/icon46.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "52",
     "text": "Use a freqency \n  analyser\nfor a project",
     "icon": "/electronics/icons/icon9.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "53",
     "text": "Order a \nPCB with\nyour design",
     "icon": "/electronics/icons/icon47.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "54",
     "text": "Repair a \nbroken trace\non a PCB",
     "icon": "/electronics/icons/icon54.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "55",
     "text": "Use  \nautomatic\ngain control",
     "icon": "/electronics/icons/icon10.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "56",
     "text": "Make a  \nPID circuit\nwith Op-Amps",
     "icon": "/electronics/icons/icon33.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "57",
     "text": "Teach a   \n class on\nElectronics",
     "icon": "/electronics/icons/icon40.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "58",
     "text": "Learn  \n PCB Design\nSoftware",
     "icon": "/electronics/icons/icon47.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "59",
     "text": "Use an  \n e-paper display\nin a project",
     "icon": "/electronics/icons/icon59.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "60",
     "text": "Build a  \n Radio Frequency\n(RF)Project",
     "icon": "/electronics/icons/icon60.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "61",
     "text": "Make an  \n open source\nproject",
     "icon": "/electronics/icons/icon61.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "62",
     "text": "Use capacitive  \n touch in a PCB\ndesign",
     "icon": "/electronics/icons/icon62.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "63",
     "text": "Make  \n something \nwith PCB Art",
     "icon": "/electronics/icons/icon63.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "64",
     "text": "Make an  \n electronic \nsculpture",
     "icon": "/electronics/icons/icon64.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "65",
     "text": "Make a switch  \n mode power \nsupply",
     "icon": "/electronics/icons/icon21.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "66",
     "text": "Release a   \n tutorial on a \nproject you've made",
     "icon": "/electronics/icons/icon66.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "67",
     "text": "Create an   \n FPGA Project",
     "icon": "/electronics/icons/icon67.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   },
   {
     "id": "68",
     "text": "Write your  \n own C/C++ library \n for a sensor \n from scratch",
     "icon": "/electronics/icons/icon68.svg",
-    "description": ""
+    "description": "",
+    "set": "electronics"
   }
 ]

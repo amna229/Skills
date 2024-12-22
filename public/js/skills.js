@@ -117,8 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 greenCircle.setAttribute('data-id', skill.id); // Add data-id
                 svgWrapper.appendChild(greenCircle);
 
-
-
+                console.log("Añadiendo SVG para skill:", skill.id);
                 svg.appendChild(polygon);
                 svg.appendChild(text);
                 svg.appendChild(image);
@@ -165,7 +164,13 @@ document.addEventListener("DOMContentLoaded", () => {
                                 localStorage.setItem('actSkill', skill.id);
                                 const svgData = new XMLSerializer().serializeToString(svg);
                                 localStorage.setItem(`skillsvg${skill.id}`, svgData);
-                                window.open('/:skillTreeName/edit/:skillID', '_blank');
+                                // Aquí construimos la URL correctamente
+                                const skillTreeName = skill.set; // O obtenerlo dinámicamente si es necesario
+                                const skillID = skill.id;
+                                localStorage.setItem('actSkill', skillID);
+                                window.location.href = `/electronics/edit/${skillID}`;
+                                const url = `/${skillTreeName}/edit/${skillID}`;
+                                window.open(url, '_blank');  // Abrir la página en una nueva pestaña
                             }
                         }
                     });

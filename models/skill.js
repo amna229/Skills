@@ -15,19 +15,23 @@ const skillSchema = new mongoose.Schema({
     },
     set: {
         type: String,
-        required: true
+        default: ""
+        //required: true
     },
     tasks: {
         type: [String], // Array of strings
-        required: true
+        default: []
+        //required: true
     },
     resources: {
         type: [String], // Array of strings
-        required: true
+        default: []
+       // required: true
     },
     description: {
         type: String,
-        required: true
+        default: ''
+        //required: true
     },
     score: {
         type: Number,

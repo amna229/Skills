@@ -28,7 +28,8 @@ let scraper = async () =>{
                   id: skillId,
                   text: [...skillText].map(tspan => tspan.textContent).join('\n').trim(),
                   icon: refIcon,
-                  description: ''
+                  description: '',
+                  set: "electronics"
               };
            }).filter(skill => skill.text || skill.icon); //Filtra solo aquellos que tengan texto o icono
         });
