@@ -168,8 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 const skillTreeName = skill.set; // O obtenerlo dinámicamente si es necesario
                                 const skillID = skill.id;
                                 localStorage.setItem('actSkill', skillID);
-                                window.location.href = `/electronics/edit/${skillID}`;
-                                const url = `/${skillTreeName}/edit/${skillID}`;
+                                const url = `/skills/${skillTreeName}/edit/${skillID}`;
                                 window.open(url, '_blank');  // Abrir la página en una nueva pestaña
                             }
                         }

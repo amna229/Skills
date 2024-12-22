@@ -100,7 +100,7 @@ app.get('/users/register', (req, res) => {
   res.render('register');
 });
 
-app.get('/:skillTreeName/edit/:skillID', async (req, res) => {
+app.get('/skills/:skillTreeName/edit/:skillID', async (req, res) => {
   const { skillTreeName, skillID } = req.params;
 
   try{

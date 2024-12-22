@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
 });
 
 // Ruta para mostrar el formulario de edición de un Skill
-router.get('/:skillTreeName/edit/:skillID', (req, res, next) => req.ensureAdmin(req, res, next), (req, res) => {
+router.get('/skills/:skillTreeName/edit/:skillID', (req, res, next) => req.ensureAdmin(req, res, next), (req, res) => {
     const { skillTreeName, skillID } = req.params;
     const skillsPath = path.join(__dirname, '../scripts/skills.json');
 
@@ -27,14 +27,14 @@ router.get('/:skillTreeName/edit/:skillID', (req, res, next) => req.ensureAdmin(
         // Reemplazar \n por espacios para mostrarlo correctamente
         skill.text = skill.text.replace(/\n/g, ' ');
 
-        res.render('editSkill', { skill });
+        res.render('editSkill', { skill, skillTreeName });
     } catch (err) {
         res.status(500).render('error', { message: 'Error al cargar los datos del Skill' });
     }
 });
 
 // Ruta para procesar la edición del Skill
-router.post('/:skillTreeName/edit/:skillID', (req, res, next) => req.ensureAdmin(req, res, next), (req, res) => {
+router.post('/skills/:skillTreeName/edit/:skillID', (req, res, next) => req.ensureAdmin(req, res, next), (req, res) => {
     const { skillTreeName, skillID } = req.params;
     const { text, description, icon } = req.body;
     const skillsPath = path.join(__dirname, '../scripts/skills.json');
