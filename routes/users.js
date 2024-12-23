@@ -52,6 +52,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
+
 // POST /users/login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -105,6 +106,21 @@ router.get('/logout', (req, res) => {
     });
   } else {
     res.redirect('users/login');
+  }
+});
+
+//GET /users/leaderboard
+router.get('/leaderboard', async (req, res)=>{
+  const Badge = req.Badge;
+  try {
+    const badges = await Badge.find();
+    // Obtén todos los usuarios desde la base de datos
+    const users = await User.find();
+    // Renderiza la vista leaderboard.ejs y pasa los usuarios como datos , { users: users }
+    res.render('leaderboard', {badges});
+  } catch (error) {
+    console.error('Error fetching badges:', error);
+    res.status(500).send('Error fetching badges!');
   }
 });
 

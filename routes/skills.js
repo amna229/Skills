@@ -20,7 +20,7 @@ router.get('/:skillTreeName/edit/:skillID', async (req, res) => {
             return res.status(404).send('Skill no encontrado');
             //return res.status(404).render('error', { message: 'Skill no encontrado' });
         }
-        res.render('editSkill', { skill, skillTreeName });
+        res.render('edit-skill', { skill, skillTreeName });
     } catch (err) {
         console.error('Error al buscar el skill:', err);
         return res.status(500).send('Error en la base de datos');
@@ -68,7 +68,7 @@ router.get('/:skillTreeName/add', (req, res) => {
         score: 1,
         icon: ''
     };
-    res.render('addSkill', { skillTreeName, skill });
+    res.render('add-skill', { skillTreeName, skill });
 });
 
 // Añadir Skill (POST)
@@ -93,32 +93,4 @@ router.post('/:skillTreeName/add', async (req, res) => {
         res.status(500).send('Error al crear el Skill.');
     }
 });
-
-/*
-router.post('/:skillTreeName/edit/:skillID', async (req, res) => {
-    const { skillTreeName, skillID } = req.params;
-    const { skillName, description, tasks, resources, score } = req.body;
-
-    try {
-        // Actualiza la competencia
-        const updatedSkill = await Skill.findByIdAndUpdate(
-            skillID,
-            {
-                name: skillName,
-                description,
-                tasks: tasks.split('\n').map(t => t.trim()),
-                resources: resources.split('\n').map(r => r.trim()),
-                score: parseInt(score),
-                ...(req.file && { icon: req.file.path }) // Si se subió un archivo, actualiza el icono
-            },
-            { new: true }
-        );
-
-        res.redirect(`/skills/${skillTreeName}`);
-    } catch (err) {
-        console.error('Error updating skill:', err);
-        res.status(500).send('Server error.');
-    }
-});
-*/
 module.exports = router;

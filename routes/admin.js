@@ -72,6 +72,7 @@ router.post('/badges/edit/:id', async (req, res) => {
 
 // 7.1.5 POST /admin/badges/delete/:id
 router.post('/badges/delete/:id', async (req, res) => {
+    const Badge = req.Badge;
     const { id } = req.params;
     try {
         await Badge.findByIdAndDelete(id);
@@ -105,6 +106,7 @@ router.get('/users', async (req, res) => {
 // 7.1.7 POST /admin/change-password
 router.post('/change-password', async (req, res) => {
     const { userId, newPassword } = req.body;
+    const User = req.User;
 
     if (!newPassword) {
         return res.status(400).send('Password is required');

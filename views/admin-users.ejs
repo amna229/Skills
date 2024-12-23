@@ -21,7 +21,15 @@
         <tbody>
         </tbody>
     </table>
-    <script src="/js/manageUsers.js"></script>
 </div>
+    <br>
+    <h2>Change Password</h2>
+    <div class="input-container">
+        <label for="password">New Password:</label>
+        <input type="text" id="password" name="password" value="<%= users.password %>" required disabled>
+        <button type="submit" class="default-buttons" disabled>Change Password</button>
+    </div>
+    <script src="/js/manageUsers.js"></script>
+
 </body>
 </html>

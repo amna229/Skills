@@ -95,6 +95,7 @@ app.use(express.static(path.join(__dirname,'badges')));
 app.use('/badges', express.static(path.join(__dirname,'badges')));
 
 // Rutas personalizadas
+
 // Ruta para cargar las medallas y los puntos
 app.get('/leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'leaderboard.html'));

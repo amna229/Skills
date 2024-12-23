@@ -96,6 +96,25 @@ h1 {
     background-color: darkred;
 }
 
+.input-container {
+    display: flex;          /* Flexbox para alinear los elementos en fila */
+    align-items: center;    /* Alinea verticalmente los elementos */
+    gap: 10px;              /* Espacio entre el label y el input */
+}
+
+/* Puedes personalizar el tamaño y apariencia del label */
+.input-container label {
+    margin: 0;              /* Elimina márgenes innecesarios */
+    width: 120px;           /* Puedes ajustar el ancho del label */
+}
+
+/* Estilos para el input */
+.input-container input {
+    padding: 5px;           /* Espacio dentro del input */
+    font-size: 16px;        /* Tamaño de fuente */
+    width: 200px;           /* Ancho del input */
+}
+
 .custom-svg {
     margin-top: 20px;
     text-align: center;

@@ -13,14 +13,14 @@ function createLeaderboardRow(badge){
 
     // Columna del rango
     const rangeCell = document.createElement('td');
-    rangeCell.textContent = badge.rango;
+    rangeCell.textContent = badge.name;
     row.appendChild(rangeCell);
 
     // Columna de la medalla (imagen)
     const imageCell = document.createElement('td');
     const img = document.createElement('img');
-    img.src = badge.png;
-    img.alt = badge.rango;
+    img.src = badge.image_url;
+    img.alt = badge.name;
     img.width = 50;
     imageCell.appendChild(img);
     row.appendChild(imageCell);

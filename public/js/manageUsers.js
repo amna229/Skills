@@ -17,9 +17,9 @@ function createUserRow(user) {
 
     // Celda de Admin (Yes/No)
     const adminCell = document.createElement('td');
-    if (user.admin = true) {
+    if (user.admin) {
         adminCell.textContent = 'Yes';
-    } else adminCell.textContent = 'No';
+    } else{adminCell.textContent = 'No';}
     row.appendChild(adminCell);
 
     // Celda de Acciones
@@ -30,6 +30,11 @@ function createUserRow(user) {
     changePasswordButton.textContent = 'Change Password';
     changePasswordButton.className = 'default-buttons';
     changePasswordButton.addEventListener('click', () => {
+        // Habilitar el campo de contraseña y el botón de cambio
+       // enablePasswordFields();
+
+        // Deshabilitar otros botones de acción
+        //disableOtherActionButtons(changePasswordButton);
         const newPassword = prompt(`Enter new password for ${user.username}:`);
         if (newPassword) {
             changeUserPassword(user._id, newPassword);
@@ -40,6 +45,22 @@ function createUserRow(user) {
     row.appendChild(actionsCell);
 
     return row;
+}
+
+// Habilitar los campos de contraseña
+function enablePasswordFields() {
+    document.getElementById('password').disabled = false;
+    document.querySelector('button[type="submit"]').disabled = false;
+}
+
+// Deshabilitar otros botones de acción
+function disableOtherActionButtons(excludeButton) {
+    const actionButtons = document.querySelectorAll('#leaderboard button');
+    actionButtons.forEach(button => {
+        if (button !== excludeButton) {
+            button.disabled = true;
+        }
+    });
 }
 
 async function changeUserPassword(userId, newPassword) {
