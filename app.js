@@ -10,20 +10,23 @@ const session = require('express-session');
 
 // Models
 const Skill = require('./models/skill');
+const User = require('./models/user');
+const Badge = require('./models/badge');
 const skillsData = require('./scripts/skills.json');
+const badgesData = require('./scripts/badges.json');
 
-// Función ensureAdmin
-function ensureAdmin(req, res, next) {
-  req.user = { admin: true }; // simulación para pruebas
-  /*if (req.user && req.user.admin) {
-    return next();
+
+// Función isAdmin
+function isAdmin(req, res, next) {
+  if (req.session && req.session.user && req.session.user.admin === true) {
+    return next();  // Si es admin, permite continuar
   }
-  res.status(403).render('error', { message: 'acceso denegado: se necesita ser administrador' });*/
-};
+  res.redirect('/users/login');  // Si no es admin, redirige al login
+}
 
 var skillsRouter = require('./routes/skills');
 var usersRouter = require('./routes/users');
-//var adminRouter = require('./routes/admin');
+var adminRouter = require('./routes/admin');
 
 var app = express();
 
@@ -31,11 +34,14 @@ const resetSkillsCollection = async () => {
   try {
     // Eliminar todos los documentos de la colección
     await Skill.deleteMany({});
+    await Badge.deleteMany({});
     console.log('Colección limpia');
 
     // Insertar los nuevos datos de skills desde el archivo JSON
     const docs = await Skill.insertMany(skillsData);
+    const bdgs = await Badge.insertMany(badgesData);
     console.log(`Se han insertado ${docs.length} skills.`);
+    console.log(`Se han insertado ${bdgs.length} badges.`);
 
   } catch (err) {
     console.log('Error al limpiar o insertar los skills:', err);
@@ -59,6 +65,11 @@ async function connectToDatabaseAndStartServer() {
 }
 
 connectToDatabaseAndStartServer();
+
+// Guardar los modelos en app.locals
+app.locals.User = User;
+app.locals.Badge = Badge;
+
 // Middlewares generales
 app.use(logger('dev'));
 app.use(express.json());
@@ -105,29 +116,17 @@ app.get('/users/register', (req, res) => {
   res.render('register');
 });
 
-// Ruta para la página de administración
-app.get('/admin-dashboard', (req, res) => {
-  res.render('admin-dashboard', { title: 'Admin Dashboard' });
-});
-
-// Rutas para los botones "Manage Badges" y "Manage Users"
-
-// Ruta para la página de administración de medallas
-app.get('/admin/badges', (req, res) => {
-  res.render('badges');
-});
-
-app.get('/admin/users', (req, res) => {
-  res.render('users');
-});
-
 // Uso de routers
 app.use('/users', usersRouter);
 app.use('/skills', (req, res, next) => {
   req.Skill = Skill;  // Pasa el modelo a las rutas
   next();
 }, skillsRouter);
-//app.use('/admin', adminRouter);
+app.use('/admin', isAdmin, (req, res, next) => {
+  req.Badge = Badge;
+  req.User = User;
+  next();
+}, adminRouter);
 
 // Manejo de errores 404
 app.use(function(req, res, next) {

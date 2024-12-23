@@ -1,7 +1,7 @@
 async function fetchBadges() {
     try {
         // Cargar el archivo JSON
-        const response = await fetch('/badges.json');
+        const response = await fetch('/admin/api/badges');
         return await response.json();
     } catch (error) {
         console.error('Error fetching badges:', error);
@@ -14,21 +14,21 @@ function createLeaderboardRow(badge){
     // Columna de la medalla (imagen)
     const imageCell = document.createElement('td');
     const img = document.createElement('img');
-    const imagePath = badge.png.startsWith('/badges/') ? badge.png : `/badges/${badge.png}`;
+    const imagePath = badge.image_url.startsWith('/badges/') ? badge.image_url : `/badges/${badge.image_url}`;
     img.src = imagePath;
-    img.alt = badge.rango;
+    img.alt = badge.name;
     img.width = 50;
     imageCell.appendChild(img);
     row.appendChild(imageCell);
 
     // Columna del rango
     const nameCell = document.createElement('td');
-    nameCell.textContent = badge.rango;
+    nameCell.textContent = badge.name;
     row.appendChild(nameCell);
 
     // Columna del rango
     const rangeCell = document.createElement('td');
-    rangeCell.textContent = badge.rango;
+    rangeCell.textContent = badge.name;
     row.appendChild(rangeCell);
 
     // Columna de puntos minimos
@@ -47,6 +47,10 @@ function createLeaderboardRow(badge){
     const editButton = document.createElement('button');
     editButton.textContent = 'Edit';
     editButton.classList.add('default-buttons');
+    editButton.addEventListener('click', () => {
+        // Redirige a la página de edición con el ID del badge
+        window.location.href = `/admin/badges/edit/${badge._id}`;
+    });
 
     actionsCell.appendChild(editButton);
 

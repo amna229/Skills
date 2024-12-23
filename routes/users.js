@@ -75,9 +75,12 @@ router.post('/login', async (req, res) => {
     }
 
     // Iniciar la sesión del usuario
-    req.session.userId = user._id;  // Guardar el ID del usuario en la sesión
-    req.session.username = user.username;  // Guardar el nombre de usuario
-    req.session.admin = user.admin;  // Guardar si el usuario es administrador
+    // Almacenar el usuario en la sesión
+    req.session.user = {
+      id: user._id,
+      username: user.username,
+      admin: user.admin // Guardar la propiedad 'admin' en la sesión
+    };
 
     res.redirect('/skills');
 

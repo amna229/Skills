@@ -27,10 +27,10 @@ let badges = async () => {
 
                     // Creamos el objeto de la medalla
                     const badge = {
-                        rango: range,
+                        name: range,
                         bitpoints_min: bitpointsMin,
                         bitpoints_max: bitpointsMax,
-                        png: pngUrl.split('/').pop().replace(/\.png$/, '-min.png')
+                        image_url: pngUrl.split('/').pop().replace(/\.png$/, '-min.png')
                     };
                     // Incrementamos el mínimo para el próximo rango
                     bitpointsMin += bitpointsIncrement;

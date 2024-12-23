@@ -18,7 +18,7 @@ const badgeSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-});
+},  { _id: true });
 
 // Crear y exportar el modelo de Badge
 const Badge = mongoose.model('Badge', badgeSchema);
