@@ -39,6 +39,62 @@ h1 {
     font-weight: bold;
     margin-top: 10px;
 }
+.admin-dashboard {
+    flex-direction: column; /* Coloca los elementos verticalmente */
+    justify-content: center; /* Centra verticalmente */
+    align-items: center; /* Centra horizontalmente */
+    text-align: center;
+    margin-top: 100px; /* Ajusta el valor según lo necesites */
+}
+
+.admin-dashboard h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+}
+/* Contenedor del botón */
+.buttonAdd-container {
+    text-align: right; /* Alinea los elementos hijos a la derecha */
+    margin: 10px 0; /* Añade un margen para separar el botón */
+}
+
+.buttonAdmin-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Botón azul para "Add new skill" */
+.default-buttons {
+    background-color: blue;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.default-buttons:hover {
+    background-color: darkblue;
+}
+
+.delete-buttons{
+    background-color: red;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.delete-buttons:hover {
+    background-color: darkred;
+}
 
 .custom-svg {
     margin-top: 20px;
@@ -216,17 +272,6 @@ footer {
 /* Alternar el color de fondo para filas */
 #leaderboard tr:nth-child(odd) {
     background-color: #e0e0e0;
-}
-
-#leaderboard td:nth-child(1) {
-    text-align: left;
-    width: 250px;
-}
-#leaderboard td:nth-child(2) {
-    width: 200px;
-}
-#leaderboard td:nth-child(3) {
-    width: 200px;
 }
 
 .login-body {

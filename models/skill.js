@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const skillSchema = new mongoose.Schema({
     id: {
         type: Number,
-        required: true
+        required: true,
+        unique: true
     },
     text: {
         type: String,
@@ -15,23 +16,22 @@ const skillSchema = new mongoose.Schema({
     },
     set: {
         type: String,
-        default: ""
-        //required: true
+        default: "",
+        required: true
     },
     tasks: {
         type: [String], // Array of strings
-        default: []
-        //required: true
+        default: [],
+        required: true
     },
     resources: {
         type: [String], // Array of strings
-        default: []
-       // required: true
+        default: [],
+        required: true
     },
     description: {
         type: String,
         default: ''
-        //required: true
     },
     score: {
         type: Number,

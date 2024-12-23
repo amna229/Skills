@@ -12,6 +12,15 @@ const session = require('express-session');
 const Skill = require('./models/skill');
 const skillsData = require('./scripts/skills.json');
 
+// Función ensureAdmin
+function ensureAdmin(req, res, next) {
+  req.user = { admin: true }; // simulación para pruebas
+  /*if (req.user && req.user.admin) {
+    return next();
+  }
+  res.status(403).render('error', { message: 'acceso denegado: se necesita ser administrador' });*/
+};
+
 var skillsRouter = require('./routes/skills');
 var usersRouter = require('./routes/users');
 //var adminRouter = require('./routes/admin');
@@ -28,24 +37,28 @@ const resetSkillsCollection = async () => {
     const docs = await Skill.insertMany(skillsData);
     console.log(`Se han insertado ${docs.length} skills.`);
 
-    // Desconectar de MongoDB después de la operación
-    mongoose.disconnect();
   } catch (err) {
     console.log('Error al limpiar o insertar los skills:', err);
   }
 };
 
 // Conectar con la base de datos de MongoDB
-mongoose.connect('mongodb://localhost:27017/skills', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-    .then(() => {
-      console.log('Conectado a MongoDB');
-      resetSkillsCollection();
-    })
-    .catch((err) => console.error('Error de conexión a MongoDB:', err));
+// Conectar a MongoDB y luego iniciar el servidor
+async function connectToDatabaseAndStartServer() {
+  try {
+    await mongoose.connect('mongodb://localhost:27017/skills');
+    console.log('Conectado a MongoDB');
 
+    // Inicializa la colección de skills
+    await resetSkillsCollection();
+
+  } catch (err) {
+    console.error('Error de conexión a MongoDB:', err);
+    process.exit(1); // Finaliza la aplicación si no hay conexión
+  }
+}
+
+connectToDatabaseAndStartServer();
 // Middlewares generales
 app.use(logger('dev'));
 app.use(express.json());
@@ -60,15 +73,6 @@ app.use(session({
   saveUninitialized: true // No guardar sesiones no inicializadas
 }));
 
-// Función ensureAdmin
-function ensureadmin(req, res, next) {
-  req.user = { admin: true }; // simulación para pruebas
-  /*if (req.user && req.user.admin) {
-    return next();
-  }
-  res.status(403).render('error', { message: 'acceso denegado: se necesita ser administrador' });*/
-}
-
 // Configuración del motor de vistas
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -77,6 +81,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname,'scripts')));
 app.use(express.static(path.join(__dirname,'badges')));
+app.use('/badges', express.static(path.join(__dirname,'badges')));
 
 // Rutas personalizadas
 // Ruta para cargar las medallas y los puntos
@@ -100,28 +105,28 @@ app.get('/users/register', (req, res) => {
   res.render('register');
 });
 
-app.get('/skills/:skillTreeName/edit/:skillID', async (req, res) => {
-  const { skillTreeName, skillID } = req.params;
+// Ruta para la página de administración
+app.get('/admin-dashboard', (req, res) => {
+  res.render('admin-dashboard', { title: 'Admin Dashboard' });
+});
 
-  try{
-    // Si estás utilizando un archivo JSON, lee desde el archivo
-    const skills = JSON.parse(fs.readFileSync(path.join(__dirname, 'scripts/skills.json')));
-    const skill = skills.find(s => s.id === skillID);
+// Rutas para los botones "Manage Badges" y "Manage Users"
 
-    if (!skill) {
-      return res.status(404).send("Habilidad no encontrada");
-    }
-    // Pass the skill object to the view
-    res.render('editSkill', {skill, skillTreeName});
+// Ruta para la página de administración de medallas
+app.get('/admin/badges', (req, res) => {
+  res.render('badges');
+});
 
-  }catch (err){
-    return res.status(500).send("Error al obtener la habilidad");
-  }
+app.get('/admin/users', (req, res) => {
+  res.render('users');
 });
 
 // Uso de routers
 app.use('/users', usersRouter);
-app.use('/skills', skillsRouter);
+app.use('/skills', (req, res, next) => {
+  req.Skill = Skill;  // Pasa el modelo a las rutas
+  next();
+}, skillsRouter);
 //app.use('/admin', adminRouter);
 
 // Manejo de errores 404
@@ -133,11 +138,13 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  res.locals.error = err;
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {
+    message: res.locals.message,
+    error: res.locals.error  // Pasamos el objeto error a la vista
+  });
 });
 
 module.exports = app;

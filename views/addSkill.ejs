@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Skill</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Añadir nuevo Skill</h1>
+    <div class="container-edit">
+    <form action="/skills/<%= skillTreeName %>/add" method="POST">
+        <label for="skill-text">Skill Text:</label>
+        <textarea id="skill-text" name="skillText" rows="2"><%= skill.text %></textarea>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4"><%= skill.description %></textarea>
+
+        <label for="tasks">Tasks to Complete (one per line):</label>
+        <textarea id="tasks" name="tasks" rows="4"></textarea>
+
+        <label for="resources">Resources (one per line):</label>
+        <textarea id="resources" name="resources" rows="4"></textarea>
+
+        <label for="skill-score">Skill Score:</label>
+        <input type="number" id="skill-score" name="skillScore" value="1" min="1">
+
+        <label for="icon-upload">Upload Icon (30x30 png):</label>
+        <input type="file" id="icon-upload" name="icon" accept=".png">
+
+        <div class="form-actions">
+            <button type="submit" class="btn save">Add new Skill</button>
+            <button type="button" class="btn cancel" onclick="cancelEdit()">Cancel</button>
+        </div>
+    </form>
+    </div>
+</body>
+</html>

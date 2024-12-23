@@ -9,32 +9,26 @@ router.get('/', function(req, res, next) {
 });
 
 // Ruta para mostrar el formulario de edición de un Skill
-router.get('/skills/:skillTreeName/edit/:skillID', (req, res, next) => req.ensureAdmin(req, res, next), (req, res) => {
+router.get('/:skillTreeName/edit/:skillID', async (req, res) => {
     const { skillTreeName, skillID } = req.params;
-    const skillsPath = path.join(__dirname, '../scripts/skills.json');
+    const Skill = req.Skill; // Obtén el modelo desde req
 
     try {
-        const skills = JSON.parse(fs.readFileSync(skillsPath, 'utf8'));
-        const skill = skills.find(skill => {
-            const extractedSkillTree = skill.icon.split('/')[1]; // Obtener skillTreeName del icon
-            return extractedSkillTree === skillTreeName && skill.id === skillID;
-        });
-
+        // Buscamos el skill en la base de datos usando el ID
+        const skill = await Skill.findOne({ id: skillID, set:skillTreeName });
         if (!skill) {
-            return res.status(404).render('error', { message: 'Skill no encontrado' });
+            return res.status(404).send('Skill no encontrado');
+            //return res.status(404).render('error', { message: 'Skill no encontrado' });
         }
-
-        // Reemplazar \n por espacios para mostrarlo correctamente
-        skill.text = skill.text.replace(/\n/g, ' ');
-
         res.render('editSkill', { skill, skillTreeName });
     } catch (err) {
-        res.status(500).render('error', { message: 'Error al cargar los datos del Skill' });
+        console.error('Error al buscar el skill:', err);
+        return res.status(500).send('Error en la base de datos');
     }
 });
 
 // Ruta para procesar la edición del Skill
-router.post('/skills/:skillTreeName/edit/:skillID', (req, res, next) => req.ensureAdmin(req, res, next), (req, res) => {
+router.post('/:skillTreeName/edit/:skillID', async (req, res) => {
     const { skillTreeName, skillID } = req.params;
     const { text, description, icon } = req.body;
     const skillsPath = path.join(__dirname, '../scripts/skills.json');
@@ -63,29 +57,44 @@ router.post('/skills/:skillTreeName/edit/:skillID', (req, res, next) => req.ensu
     }
 });
 
-/*
-// Ruta para el formulario de edición
-router.get('/:skillTreeName/edit/:skillID', async (req, res) => {
-    const { skillTreeName, skillID } = req.params;
-    try {
-        // Obtén los datos de la competencia desde la base de datos
-        const skill = await getSkillById(skillID);
+// Formulario para añadir Skill (GET)
+router.get('/:skillTreeName/add', (req, res) => {
+    const { skillTreeName } = req.params;
+    const skill = {
+        text: '',
+        description: '',
+        tasks: [],
+        resources: [],
+        score: 1,
+        icon: ''
+    };
+    res.render('addSkill', { skillTreeName, skill });
+});
 
-        if (!skill) {
-            return res.status(404).send('Skill not found.');
-        }
-        // Renderiza la vista del formulario de edición
-        res.render('editSkill', {
-            title: `Edit Skill: ${skill.name}`,
-            skillTreeName,
-            skill
+// Añadir Skill (POST)
+router.post('/:skillTreeName/add', async (req, res) => {
+    const { skillTreeName } = req.params;
+    const { text, description, tasks, resources, score, icon } = req.body;
+
+    try {
+        const newSkill = new Skill({
+            text,
+            description,
+            set: skillTreeName,
+            tasks: tasks.split('\n'),
+            resources: resources.split('\n'),
+            score: parseInt(score) || 1,
+            icon,
         });
-    } catch (err) {
-        console.error('Error fetching skill:', err);
-        res.status(500).send('Server error.');
+        await newSkill.save();
+        res.redirect(`/skills/${skillTreeName}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al crear el Skill.');
     }
 });
 
+/*
 router.post('/:skillTreeName/edit/:skillID', async (req, res) => {
     const { skillTreeName, skillID } = req.params;
     const { skillName, description, tasks, resources, score } = req.body;
