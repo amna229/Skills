@@ -148,7 +148,6 @@ router.get('/leaderboard', async (req, res) => {
 
 router.get('/current-user', (req, res) => {
   if (req.session.user) {
-    console.log(req.session.user.username);
     res.json({ username: req.session.user.username });
   } else {
     res.status(401).json({ error: 'Not logged in' });

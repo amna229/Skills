@@ -93,4 +93,116 @@ router.post('/:skillTreeName/add', async (req, res) => {
         res.status(500).send('Error al crear el Skill.');
     }
 });
+
+// GET /skills/:skillTreeName/view/:skillID
+router.get('/:skillTreeName/view/:skillID', async (req, res) => {
+    const { skillTreeName, skillID } = req.params;
+    const Skill = req.Skill;
+    const UserSkill = req.UserSkill;
+
+    try {
+        const skill = await Skill.findOne({ id: skillID, set: skillTreeName });
+        if (!skill) {
+            return res.status(404).send('Skill no encontrado');
+        }
+
+        const pendingEvidences = await UserSkill.find({
+            skill: skill._id,
+            verified: false
+        }).populate('user');
+
+        res.render('view-skill', { skill, pendingEvidences });
+    } catch (error) {
+        console.error('Error al obtener el skill:', error);
+        res.status(500).send('Error al obtener los datos del skill');
+    }
+});
+
+// POST /skills/:skillTreeName/:skillID/verify
+router.post('/:skillTreeName/:skillID/verify', async (req, res) => {
+    const { skillTreeName, skillID } = req.params;
+    const { userSkillId, approved } = req.body;
+    const UserSkill = req.UserSkill;
+    const User = req.User;
+
+    try {
+        const userSkill = await UserSkill.findById(userSkillId);
+        if (!userSkill) {
+            return res.status(404).json({ success: false, message: 'UserSkill no encontrado' });
+        }
+
+        const verifier = await User.findById(req.session.userId);
+        if (!verifier) {
+            return res.status(403).json({ success: false, message: 'Usuario no autorizado' });
+        }
+
+        const verification = {
+            user: verifier._id,
+            approved: approved === 'true',
+            verifiedAt: new Date()
+        };
+
+        userSkill.verifications.push(verification);
+
+        // Check if skill should be marked as verified
+        if (verifier.admin || userSkill.verifications.filter(v => v.approved).length >= 3) {
+            userSkill.verified = true;
+
+            // Update user's score if skill is verified
+            const user = await User.findById(userSkill.user);
+            if (user) {
+                const skill = await req.Skill.findById(userSkill.skill);
+                user.score += skill ? skill.score : 1;
+                await user.save();
+            }
+        }
+
+        await userSkill.save();
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error al verificar evidencia:', error);
+        res.status(500).json({ success: false, message: 'Error al verificar la evidencia' });
+    }
+});
+
+// POST /skills/:skillTreeName/submit-evidence
+router.post('/:skillTreeName/submit-evidence', async (req, res) => {
+    const { skillTreeName } = req.params;
+    const { skillId, evidence, userSkillId } = req.body;
+    const UserSkill = req.UserSkill;
+    const Skill = req.Skill;
+
+    try {
+        const skill = await Skill.findById(skillId);
+        if (!skill) {
+            return res.status(404).json({ success: false, message: 'Skill no encontrado' });
+        }
+
+        if (userSkillId) {
+            // Update existing evidence
+            const userSkill = await UserSkill.findById(userSkillId);
+            if (!userSkill) {
+                return res.status(404).json({ success: false, message: 'UserSkill no encontrado' });
+            }
+            userSkill.evidence = evidence;
+            await userSkill.save();
+        } else {
+            // Create new evidence
+            const userSkill = new UserSkill({
+                user: req.session.userId,
+                skill: skillId,
+                evidence,
+                completed: true,
+                completedAt: new Date()
+            });
+            await userSkill.save();
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error al enviar evidencia:', error);
+        res.status(500).json({ success: false, message: 'Error al enviar la evidencia' });
+    }
+});
+
 module.exports = router;
