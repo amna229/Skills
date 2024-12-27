@@ -10,45 +10,24 @@
 <body>
 <%- include('partials/header', { title: 'Welcome, admin!'}) %>
 <h1>Leaderboard</h1>
-<div>
-    <% badges.forEach(badge => { %>
-        <h2 style="text-align: center"><%= badge.name %></h2>
-        <table id="users-leaderboard">
-            <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Username</th>
-                <th>Score</th>
-                <th>Badge</th>
-                <th>Range</th>
-            </tr>
-            </thead>
-            <tbody>
-            <%
-                const usersWithBadge = users.filter(user =>
-                        user.score >= badge.bitpoints_min &&
-                        user.score <= (badge.bitpoints_max || Infinity)
-                ).sort((a, b) => b.score - a.score);
-
-            if (usersWithBadge.length === 0) { %>
-                <tr>
-                    <td colspan="5">No users in this range yet.</td>
-                </tr>
-            <% } else { %>
-                <% usersWithBadge.forEach((user, index) => { %>
-                    <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= user.username %></td>
-                        <td><%= user.score %></td>
-                        <td><img src="<%= badge.image_url %>" alt="<%= badge.name %>" width="30"></td>
-                        <td><%= badge.name %></td>
-                    </tr>
-                <% }); %>
-            <% } %>
-            </tbody>
-        </table>
-    <% }); %>
+<div id="leaderboard-container">
+    <table id="users-leaderboard">
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Score</th>
+            <th>Badge</th>
+            <th>Range</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Content will be dynamically populated by users-leaderboard.js -->
+        </tbody>
+    </table>
 </div>
+
+<script src="/js/users-leaderboard.js"></script>
 </body>
 </html>
 
