@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     let actSkill = localStorage.getItem('actSkill');
     let skill = null;
 
@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (skill) {
-
         let skillText = skill.text;
         document.getElementById('skilltxt').innerHTML = '<strong>Skill: ' + skillText + '</strong>';
         document.getElementById('skillDesc').innerText = 'Space for the description of the skill: ' + skill.description;
@@ -82,16 +81,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const unverifiedSubmissions = document.getElementById("unverifiedSubmissions");
         const unverifiedContainer = document.getElementById("unverified-evidences-container");
 
-        // Load evidence data from localStorage
         const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
-        const currentSkillEvidence = evidenceData[skill.id] || []; // Access evidence for the current skill
+        const currentSkillEvidence = evidenceData[skill.id] || [];
 
         if (currentSkillEvidence.length > 0) {
             unverifiedContainer.style.display = "block";
             currentSkillEvidence.forEach(evidenceEntry => {
                 const newRow = document.createElement("tr");
                 newRow.innerHTML = `
-                <td>${evidenceEntry.user || "Unknown User"}</td>
+                <td>${evidenceEntry.user}</td>
                 <td>${evidenceEntry.evidence}</td>
                 <td>
                     <button class="btn btn-success btn-sm">Approve</button>
@@ -102,85 +100,86 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        evidenceButton.addEventListener("click", (event) => {
+        evidenceButton.addEventListener("click", async (event) => {
             event.preventDefault();
             const evidenceText = evidenceInput.value.trim();
 
-            if (evidenceText === "") {
-                alert("Please enter evidence before submitting.");
-                return;
-            }
+            try {
+                const response = await fetch('/users/current-user');
+                if (response.ok) {
+                    const data = await response.json();
+                    const loggedInUsername = data.username;
+                    console.log(loggedInUsername);
 
-            // Retrieve or initialize evidenceData
-            const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
-            const skillEvidence = evidenceData[skill.id] || [];
+                    if (evidenceText === "") {
+                        alert("Please enter evidence before submitting.");
+                        return;
+                    }
 
-            // Check for duplicates
-            if (skillEvidence.some(e => e.evidence === evidenceText)) {
-                alert("This evidence already exists.");
-                return;
-            }
+                    const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
+                    const skillEvidence = evidenceData[skill.id] || [];
 
-            // Add the new evidence for the current skill
-            skillEvidence.push({ evidence: evidenceText, user: "Current User" }); // Store as an object
-            evidenceData[skill.id] = skillEvidence;
+                    skillEvidence.push({ evidence: evidenceText, user: loggedInUsername || "Username" });
+                    evidenceData[skill.id] = skillEvidence;
 
-            // Save updated evidenceData to localStorage
-            localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
+                    localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
 
-            // Dynamically add the new evidence to the table
-            const newRow = document.createElement("tr");
-            newRow.innerHTML = `
-            <td>Current User</td>
-            <td>${evidenceText}</td>
-            <td>
-                <button class="btn btn-success btn-sm">Approve</button>
-                <button class="btn btn-danger btn-sm">Reject</button>
-            </td>
+                    const newRow = document.createElement("tr");
+                    newRow.innerHTML = `
+                <td>${loggedInUsername}</td>
+                <td>${evidenceText}</td>
+                <td>
+                    <button class="btn btn-success btn-sm">Approve</button>
+                    <button class="btn btn-danger btn-sm">Reject</button>
+                </td>
             `;
-            unverifiedSubmissions.appendChild(newRow);
+                    unverifiedSubmissions.appendChild(newRow);
 
-            // Clear input and ensure the unverified container is visible
-            evidenceInput.value = "";
-            unverifiedContainer.style.display = "block";
+                    evidenceInput.value = "";
+                    unverifiedContainer.style.display = "block";
 
-            // Show confirmation
-            alert(`Evidence added for skill: ${skill.text}`);
+                    alert(`Evidence added for skill: ${skill.text}`);
+                } else {
+                    console.error('Failed to fetch username. User might not be logged in.');
+                    alert('Failed to fetch username. User might not be logged in.');
+                }
+            } catch (error) {
+                console.error('Error fetching username:', error);
+                alert('Failed to fetch username. User might not be logged in.');
+            }
+
         });
 
         unverifiedSubmissions.addEventListener("click", (event) => {
             if (event.target.classList.contains("btn-success") || event.target.classList.contains("btn-danger")) {
                 const row = event.target.closest("tr");
-                const evidenceText = row.children[1]?.textContent.trim(); // Ensure textContent is properly retrieved and trimmed
+                const evidenceText = row.children[1]?.textContent.trim();
 
                 if (!evidenceText) {
                     console.error("Unable to retrieve evidence text from the row.");
-                    return; // Exit if evidenceText is undefined
+                    return;
                 }
 
-                // Retrieve evidenceData from localStorage
                 const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
-                const skillData = JSON.parse(localStorage.getItem('skillData')) || {}; // Retrieve skill data to store verified status
+                const skillData = JSON.parse(localStorage.getItem('skillData')) || {};
                 const skillEvidence = evidenceData[skill.id] || [];
 
-                // Find the evidence entry and update its status
-                let skillVerified = false; // Track whether the skill should be marked as verified
+                let skillVerified = false;
 
                 const updatedEvidence = skillEvidence.map(evidence => {
                     if (evidence.evidence === evidenceText) {
                         if (event.target.classList.contains("btn-success")) {
-                            evidence.accepted = true; // Flag evidence as accepted
-                            skillVerified = true; // Mark skill as verified if any evidence is accepted
+                            evidence.accepted = true;
+                            skillVerified = true;
                             alert("Evidence accepted!");
                         } else {
                             alert("Evidence rejected!");
                         }
-                        return null; // Exclude this evidence from the list
+                        return null;
                     }
-                    return evidence; // Keep other evidence entries
-                }).filter(evidence => evidence !== null); // Remove null entries
+                    return evidence;
+                }).filter(evidence => evidence !== null);
 
-                // Update evidenceData for the skill
                 if (updatedEvidence.length > 0) {
                     evidenceData[skill.id] = updatedEvidence;
                 } else {
@@ -188,17 +187,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     unverifiedContainer.style.display = "none";
                 }
 
-                // Save the updated evidenceData back to localStorage
                 localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
 
-                // If skill should be verified, update its status
                 if (skillVerified) {
                     console.log(skillVerified);
-                    skillData[skill.id] = { ...skillData[skill.id], verified: true }; // Add or update verified status
-                    localStorage.setItem('skillData', JSON.stringify(skillData)); // Save updated skill data
+                    skillData[skill.id] = { ...skillData[skill.id], verified: true };
+                    localStorage.setItem('skillData', JSON.stringify(skillData));
                 }
 
-                // Remove the row from the table
                 row.remove();
             }
         });

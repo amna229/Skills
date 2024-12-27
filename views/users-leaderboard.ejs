@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/badges.json"></script>
+    <script>
+        const loggedInUsername = "<%= username %>"; // Expose the variable globally
+    </script>
+</head>
+<body>
+<%- include('partials/header', { title: 'Welcome, admin!'}) %>
+
+<h1>Leaderboard</h1>
+<div id="leaderboard-container">
+    <table id="users-leaderboard">
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Score</th>
+            <th>Badge</th>
+            <th>Range</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Content will be dynamically populated by users-leaderboard.js -->
+        </tbody>
+    </table>
+</div>
+
+<script src="/js/users-leaderboard.js"></script>
+</body>
+</html>
+

@@ -2,6 +2,7 @@ var express = require('express');
 const bcrypt = require('bcryptjs');
 var router = express.Router();
 const User = require('../models/user');  // Importa el modelo User
+const Badge = require('../models/badge');
 
 // Función para verificar si el nombre de usuario es único
 async function isUsernameUnique(username) {
@@ -110,7 +111,7 @@ router.get('/logout', (req, res) => {
 });
 
 //GET /users/leaderboard
-router.get('/leaderboard', async (req, res)=>{
+/**router.get('/leaderboard', async (req, res)=>{
   const Badge = req.Badge;
   try {
     const badges = await Badge.find();
@@ -121,6 +122,35 @@ router.get('/leaderboard', async (req, res)=>{
   } catch (error) {
     console.error('Error fetching badges:', error);
     res.status(500).send('Error fetching badges!');
+  }
+});**/
+
+router.get('/leaderboard', async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/users/login');
+  }
+
+  try {
+    const badges = await Badge.find().sort({ bitpoints_min: 1 });
+    const users = await User.find();
+
+    res.render('users-leaderboard', {
+      title: 'Welcome, ' + req.session.user.username,
+      username: req.session.user.username, // Pass username to the template
+      badges,
+      users
+    });
+  } catch (error) {
+    console.error('Error loading leaderboard:', error);
+    res.status(500).send('Error loading leaderboard');
+  }
+});
+
+router.get('/current-user', (req, res) => {
+  if (req.session.user) {
+    res.json({ username: req.session.user.username });
+  } else {
+    res.status(401).json({ error: 'Not logged in' });
   }
 });
 

@@ -293,6 +293,32 @@ footer {
     background-color: #e0e0e0;
 }
 
+/* Estilos generales para la tabla */
+#users-leaderboard {
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin: 0 auto;
+}
+
+/* Estilos para las celdas y encabezados de la tabla */
+#users-leaderboard th, #users-leaderboard td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+/* Color de fondo para el encabezado */
+#users-leaderboard th {
+    background-color: #c0c0c0;
+    color: black;
+    font-weight: bold;
+}
+
+/* Alternar el color de fondo para filas */
+#users-leaderboard tr:nth-child(odd) {
+    background-color: #e0e0e0;
+}
+
 .login-body {
     font-family: Arial, sans-serif;
     display: flex;
