@@ -136,12 +136,22 @@ router.get('/leaderboard', async (req, res) => {
 
     res.render('users-leaderboard', {
       title: 'Welcome, ' + req.session.user.username,
+      username: req.session.user.username, // Pass username to the template
       badges,
       users
     });
   } catch (error) {
     console.error('Error loading leaderboard:', error);
     res.status(500).send('Error loading leaderboard');
+  }
+});
+
+router.get('/current-user', (req, res) => {
+  if (req.session.user) {
+    console.log(req.session.user.username);
+    res.json({ username: req.session.user.username });
+  } else {
+    res.status(401).json({ error: 'Not logged in' });
   }
 });
 

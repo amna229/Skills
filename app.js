@@ -117,11 +117,6 @@ app.get('/users/register', (req, res) => {
   res.render('register');
 });
 
-// Ruta para la tabla de usuarios y medallas
-app.get('/users/leaderboard', (req, res) => {
-  res.render('users-leaderboard'); // Render the EJS file
-});
-
 // Uso de routers
 app.use('/users', usersRouter);
 app.use('/skills', (req, res, next) => {
