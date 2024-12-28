@@ -4,7 +4,7 @@ const path = require('path');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-    const isAdmin = req.session.admin || false;
+    const isAdmin = req.session.user.admin;
     res.render('index', { isAdmin });
 });
 
