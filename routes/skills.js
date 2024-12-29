@@ -1,7 +1,9 @@
 var express = require('express');
+const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 var router = express.Router();
+const upload = multer({ dest: 'public/electronics/icons' });  // Ruta de destino donde se guardarán los archivos
 
 router.get('/', function(req, res, next) {
     const isAdmin = req.session.user.admin;
@@ -58,36 +60,62 @@ router.post('/:skillTreeName/edit/:skillID', async (req, res) => {
 });
 
 // Formulario para añadir Skill (GET)
-router.get('/:skillTreeName/add', (req, res) => {
-    const { skillTreeName } = req.params;
-    const skill = {
-        text: '',
-        description: '',
-        tasks: [],
-        resources: [],
-        score: 1,
-        icon: ''
-    };
-    res.render('add-skill', { skillTreeName, skill });
+router.get('/:skillTreeName/add', async (req, res) => {
+    try{
+        const skillId = req.query.skillId; // Suponiendo que el skill ID se pasa como query string
+        const { skillTreeName } = req.params;
+        const skill = {
+            text: '',
+            description: '',
+            tasks: [],
+            resources: [],
+            score: 1,
+            icon: ''
+        };
+        res.render('add-skill', { skill, skillTreeName });
+    } catch (e) {
+        console.error('Error al cargar el formulario de añadir skill:', e);
+        res.status(500).send('Error interno del servidor');
+    }
 });
 
 // Añadir Skill (POST)
-router.post('/:skillTreeName/add', async (req, res) => {
+router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
+    const Skill = req.Skill;
     const { skillTreeName } = req.params;
     const { text, description, tasks, resources, score, icon } = req.body;
-
     try {
-        const newSkill = new Skill({
+        // Procesar el campo tasks
+        let processedTasks = [];
+        if (tasks) {
+            processedTasks = tasks.trim().split('\n').filter(Boolean);
+        }
+        // Procesar el campo resources de manera similar (si es necesario)
+        let processedResources = [];
+        if (resources) {
+            processedResources = resources.trim().split('\n').filter(Boolean);
+        }
+        const lastSkill = await Skill.findOne().sort({ id: -1 }).exec(); // Obtener el último skill basado en el id
+
+        // Si lastSkill existe, tomar su id y sumarle 1, si no, el id inicial será 1
+        const newId = lastSkill ? lastSkill.id + 1 : 1;
+        // Manejo del icono (si se sube uno)
+        const iconPath = req.file ? req.file.path : null;
+        const skill = new Skill({
+            id: newId,
             text,
             description,
             set: skillTreeName,
-            tasks: tasks.split('\n'),
-            resources: resources.split('\n'),
+            tasks: processedTasks,
+            resources: processedResources,
             score: parseInt(score) || 1,
-            icon,
+            icon: iconPath || null
         });
-        await newSkill.save();
-        res.redirect(`/skills/${skillTreeName}`);
+        await skill.save();
+        //const newSkill = await Skill.create(skillData);
+        console.log('Skill guardado exitosamente con Skill.create:', skill);
+
+        res.redirect('/skills');
     } catch (error) {
         console.error(error);
         res.status(500).send('Error al crear el Skill.');
