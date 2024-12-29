@@ -1,6 +1,7 @@
 var express = require('express');
 const fs = require('fs');
 const path = require('path');
+const mongoose = require("mongoose");
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
@@ -128,12 +129,12 @@ router.post('/:skillTreeName/:skillID/verify', async (req, res) => {
     try {
         const userSkill = await UserSkill.findById(userSkillId);
         if (!userSkill) {
-            return res.status(404).json({ success: false, message: 'UserSkill no encontrado' });
+            return res.status(404).json({ success: false, message: 'UserSkill not found' });
         }
 
-        const verifier = await User.findById(req.session.userId);
+        const verifier = await User.findById(req.session.user.id);
         if (!verifier) {
-            return res.status(403).json({ success: false, message: 'Usuario no autorizado' });
+            return res.status(403).json({ success: false, message: 'Unauthorized' });
         }
 
         const verification = {
@@ -147,61 +148,65 @@ router.post('/:skillTreeName/:skillID/verify', async (req, res) => {
         // Check if skill should be marked as verified
         if (verifier.admin || userSkill.verifications.filter(v => v.approved).length >= 3) {
             userSkill.verified = true;
-
-            // Update user's score if skill is verified
-            const user = await User.findById(userSkill.user);
-            if (user) {
-                const skill = await req.Skill.findById(userSkill.skill);
-                user.score += skill ? skill.score : 1;
-                await user.save();
-            }
         }
 
         await userSkill.save();
         res.json({ success: true });
     } catch (error) {
-        console.error('Error al verificar evidencia:', error);
-        res.status(500).json({ success: false, message: 'Error al verificar la evidencia' });
+        console.error('Error verifying evidence:', error);
+        res.status(500).json({ success: false, message: 'Error verifying evidence' });
     }
 });
 
 // POST /skills/:skillTreeName/submit-evidence
 router.post('/:skillTreeName/submit-evidence', async (req, res) => {
-    const { skillTreeName } = req.params;
     const { skillId, evidence, userSkillId } = req.body;
     const UserSkill = req.UserSkill;
-    const Skill = req.Skill;
 
     try {
-        const skill = await Skill.findById(skillId);
-        if (!skill) {
-            return res.status(404).json({ success: false, message: 'Skill no encontrado' });
+        if (!skillId || isNaN(skillId)) {
+            return res.status(400).json({ success: false, message: 'Invalid skill ID' });
         }
 
         if (userSkillId) {
             // Update existing evidence
             const userSkill = await UserSkill.findById(userSkillId);
             if (!userSkill) {
-                return res.status(404).json({ success: false, message: 'UserSkill no encontrado' });
+                return res.status(404).json({ success: false, message: 'UserSkill not found' });
             }
             userSkill.evidence = evidence;
             await userSkill.save();
         } else {
             // Create new evidence
             const userSkill = new UserSkill({
-                user: req.session.userId,
-                skill: skillId,
+                user: req.session.user.id,
+                skill: Number(skillId), // Use the custom `id` field
                 evidence,
                 completed: true,
-                completedAt: new Date()
+                completedAt: new Date(),
             });
             await userSkill.save();
         }
 
         res.json({ success: true });
     } catch (error) {
-        console.error('Error al enviar evidencia:', error);
-        res.status(500).json({ success: false, message: 'Error al enviar la evidencia' });
+        console.error('Error submitting evidence:', error);
+        res.status(500).json({ success: false, message: 'Error submitting evidence' });
+    }
+});
+
+router.get('/:skillTreeName/:skillId/evidence', async (req, res) => {
+    const { skillId } = req.params; // `skillId` is a simple number
+    const UserSkill = req.UserSkill;
+
+    try {
+        const evidences = await UserSkill.find({ skill: Number(skillId), verified: false })
+            .populate('user', 'username'); // Populate with the user's username
+
+        res.json(evidences);
+    } catch (error) {
+        console.error('Error fetching evidence:', error);
+        res.status(500).json({ success: false, message: 'Error fetching evidence' });
     }
 });
 

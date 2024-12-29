@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const allSkillsInfo = JSON.parse(localStorage.getItem('allSkillsInfo'));
     console.log(allSkillsInfo);
 
-    for(let i = 0; i < allSkillsInfo.length; i++) {
+    for (let i = 0; i < allSkillsInfo.length; i++) {
         if (allSkillsInfo[i].id == actSkill) {
             skill = allSkillsInfo[i];
             break;
@@ -75,128 +75,97 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 
-    window.addEventListener("load", () => {
-        const evidenceButton = document.getElementById("evidenceButton");
-        const evidenceInput = document.getElementById("evidenceInput");
-        const unverifiedSubmissions = document.getElementById("unverifiedSubmissions");
-        const unverifiedContainer = document.getElementById("unverified-evidences-container");
+    const unverifiedSubmissions = document.getElementById("unverifiedSubmissions");
+    const unverifiedContainer = document.getElementById("unverified-evidences-container");
 
-        const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
-        const currentSkillEvidence = evidenceData[skill.id] || [];
+    // Fetch unverified evidences from the backend
+    try {
+        const response = await fetch(`/skills/${skill.set}/${skill.id}/evidence`);
+        if (response.ok) {
+            const evidences = await response.json();
 
-        if (currentSkillEvidence.length > 0) {
-            unverifiedContainer.style.display = "block";
-            currentSkillEvidence.forEach(evidenceEntry => {
-                const newRow = document.createElement("tr");
-                newRow.innerHTML = `
-                <td>${evidenceEntry.user}</td>
-                <td>${evidenceEntry.evidence}</td>
-                <td>
-                    <button class="btn btn-success btn-sm">Approve</button>
-                    <button class="btn btn-danger btn-sm">Reject</button>
-                </td>
-                `;
-                unverifiedSubmissions.appendChild(newRow);
-            });
-        }
-
-        evidenceButton.addEventListener("click", async (event) => {
-            event.preventDefault();
-            const evidenceText = evidenceInput.value.trim();
-
-            try {
-                const response = await fetch('/users/current-user');
-                if (response.ok) {
-                    const data = await response.json();
-                    const loggedInUsername = data.username;
-                    console.log(loggedInUsername);
-
-                    if (evidenceText === "") {
-                        alert("Please enter evidence before submitting.");
-                        return;
-                    }
-
-                    const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
-                    const skillEvidence = evidenceData[skill.id] || [];
-
-                    skillEvidence.push({ evidence: evidenceText, user: loggedInUsername || "Username" });
-                    evidenceData[skill.id] = skillEvidence;
-
-                    localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
-
+            if (evidences.length > 0) {
+                unverifiedContainer.style.display = "block";
+                evidences.forEach(evidenceEntry => {
                     const newRow = document.createElement("tr");
                     newRow.innerHTML = `
-                <td>${loggedInUsername}</td>
-                <td>${evidenceText}</td>
-                <td>
-                    <button class="btn btn-success btn-sm">Approve</button>
-                    <button class="btn btn-danger btn-sm">Reject</button>
-                </td>
-            `;
+                        <td>${evidenceEntry.user.username}</td>
+                        <td>${evidenceEntry.evidence}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm" data-id="${evidenceEntry._id}">Approve</button>
+                            <button class="btn btn-danger btn-sm" data-id="${evidenceEntry._id}">Reject</button>
+                        </td>
+                    `;
                     unverifiedSubmissions.appendChild(newRow);
+                });
+            }
+        } else {
+            console.error("Failed to fetch unverified evidences.");
+        }
+    } catch (error) {
+        console.error("Error fetching unverified evidences:", error);
+    }
 
-                    evidenceInput.value = "";
-                    unverifiedContainer.style.display = "block";
+    document.getElementById("evidenceButton").addEventListener("click", async (event) => {
+        event.preventDefault();
 
-                    alert(`Evidence added for skill: ${skill.text}`);
+        const evidenceText = document.getElementById("evidenceInput").value.trim();
+        if (!evidenceText) {
+            alert("Please provide evidence before submitting!");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/skills/${skill.set}/submit-evidence`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ skillId: Number(skill.id), evidence: evidenceText }), // Pass skillId as a number
+            });
+
+            if (response.ok) {
+                alert("Evidence submitted successfully!");
+                document.getElementById("evidenceInput").value = "";
+            } else {
+                alert("Failed to submit evidence.");
+            }
+        } catch (error) {
+            console.error("Error submitting evidence:", error);
+        }
+    });
+
+    unverifiedSubmissions.addEventListener("click", async (event) => {
+        if (event.target.classList.contains("btn-success") || event.target.classList.contains("btn-danger")) {
+            const row = event.target.closest("tr");
+            const evidenceId = event.target.dataset.id;
+
+            if (!evidenceId) {
+                console.error("Unable to retrieve evidence ID.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/skills/${skill.set}/${skill.id}/verify`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userSkillId: evidenceId,
+                        approved: event.target.classList.contains("btn-success").toString()
+                    })
+                });
+
+                if (response.ok) {
+                    alert(event.target.classList.contains("btn-success") ? "Evidence approved!" : "Evidence rejected!");
+                    row.remove();
+
+                    if (unverifiedSubmissions.rows.length === 0) {
+                        unverifiedContainer.style.display = "none";
+                    }
                 } else {
-                    console.error('Failed to fetch username. User might not be logged in.');
-                    alert('Failed to fetch username. User might not be logged in.');
+                    console.error("Failed to verify evidence.");
                 }
             } catch (error) {
-                console.error('Error fetching username:', error);
-                alert('Failed to fetch username. User might not be logged in.');
+                console.error("Error verifying evidence:", error);
             }
-
-        });
-
-        unverifiedSubmissions.addEventListener("click", (event) => {
-            if (event.target.classList.contains("btn-success") || event.target.classList.contains("btn-danger")) {
-                const row = event.target.closest("tr");
-                const evidenceText = row.children[1]?.textContent.trim();
-
-                if (!evidenceText) {
-                    console.error("Unable to retrieve evidence text from the row.");
-                    return;
-                }
-
-                const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
-                const skillData = JSON.parse(localStorage.getItem('skillData')) || {};
-                const skillEvidence = evidenceData[skill.id] || [];
-
-                let skillVerified = false;
-
-                const updatedEvidence = skillEvidence.map(evidence => {
-                    if (evidence.evidence === evidenceText) {
-                        if (event.target.classList.contains("btn-success")) {
-                            evidence.accepted = true;
-                            skillVerified = true;
-                            alert("Evidence accepted!");
-                        } else {
-                            alert("Evidence rejected!");
-                        }
-                        return null;
-                    }
-                    return evidence;
-                }).filter(evidence => evidence !== null);
-
-                if (updatedEvidence.length > 0) {
-                    evidenceData[skill.id] = updatedEvidence;
-                } else {
-                    delete evidenceData[skill.id];
-                    unverifiedContainer.style.display = "none";
-                }
-
-                localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
-
-                if (skillVerified) {
-                    console.log(skillVerified);
-                    skillData[skill.id] = { ...skillData[skill.id], verified: true };
-                    localStorage.setItem('skillData', JSON.stringify(skillData));
-                }
-
-                row.remove();
-            }
-        });
+        }
     });
 });
