@@ -3,7 +3,48 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 var router = express.Router();
-const upload = multer({ dest: 'public/electronics/icons' });  // Ruta de destino donde se guardarán los archivos
+
+// Ruta al archivo skills.json
+const skillsJsonPath = path.join(__dirname, '../scripts/skills.json');
+
+// Configuración de Multer para guardar los archivos en 'public/electronics/icons/'
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, '../public/electronics/icons')); // Carpeta de destino donde se guardará el archivo
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); // Genera un nombre único
+        cb(null, uniqueSuffix + path.extname(file.originalname)); // Usa la extensión original del archivo
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// Función para actualizar el archivo skills.json
+function updateSkillsJson(newSkill) {
+    // Leer el archivo skills.json
+    fs.readFile(skillsJsonPath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error al leer el archivo skills.json:', err);
+            return;
+        }
+
+        // Parsear el JSON existente
+        let skills = JSON.parse(data);
+
+        // Agregar el nuevo skill a la lista de skills
+        skills.push(newSkill);
+
+        // Escribir el archivo skills.json actualizado
+        fs.writeFile(skillsJsonPath, JSON.stringify(skills, null, 2), (err) => {
+            if (err) {
+                console.error('Error al escribir el archivo skills.json:', err);
+            } else {
+                console.log('skills.json actualizado correctamente');
+            }
+        });
+    });
+}
 
 router.get('/', function(req, res, next) {
     const isAdmin = req.session.user.admin;
@@ -30,32 +71,74 @@ router.get('/:skillTreeName/edit/:skillID', async (req, res) => {
 });
 
 // Ruta para procesar la edición del Skill
-router.post('/:skillTreeName/edit/:skillID', async (req, res) => {
+router.post('/:skillTreeName/edit/:skillID', upload.single('icon'), async (req, res) => {
+    const Skill = req.Skill;
     const { skillTreeName, skillID } = req.params;
-    const { text, description, icon } = req.body;
+    const { text, description, tasks, resources, score, icon } = req.body;
     const skillsPath = path.join(__dirname, '../scripts/skills.json');
 
     try {
+        // Procesar el campo tasks
+        let processedTasks = [];
+        if (tasks) {
+            processedTasks = tasks.trim().split('\n').filter(Boolean);
+        }
+        // Procesar el campo resources de manera similar (si es necesario)
+        let processedResources = [];
+        if (resources) {
+            processedResources = resources.trim().split('\n').filter(Boolean);
+        }
+        const iconPath = req.file ? `/electronics/icons/${req.file.filename}` : icon;
+        // 1. Actualizamos el Skill en la base de datos
+        const updatedSkill = await Skill.findOneAndUpdate(
+            { id: skillID, set: skillTreeName },
+            {
+                text,
+                description,
+                tasks: processedTasks,
+                resources: processedResources,
+                score: parseInt(score) || 1,
+                icon: iconPath
+            },{ new: true });
+
+        // 2. Actualizamos el Skill en el archivo skills.json
         const skills = JSON.parse(fs.readFileSync(skillsPath, 'utf8'));
+
+        // Encuentra el índice del skill en el archivo JSON usando el skillID y skillTreeName
         const skillIndex = skills.findIndex(skill => {
-            const extractedSkillTree = skill.icon.split('/')[1]; // Obtener skillTreeName del icon
-            return extractedSkillTree === skillTreeName && skill.id === skillID;
+            return String(skill.id) === String(skillID) && skill.set === skillTreeName;
         });
+        console.log("skillIndex:", skillIndex);
 
         if (skillIndex === -1) {
-            return res.status(404).render('error', { message: 'Skill no encontrado para actualizar' });
+            return res.status(404).render('error', {
+                message: 'Skill no encontrado en el archivo JSON',
+                error: { status: 404 }
+            });
         }
+        // Actualizamos los campos correctos en el archivo JSON
+        const updatedSkillData = {
+            id: updatedSkill.id,
+            text: updatedSkill.text,  // Campo text
+            icon: updatedSkill.icon,  // Campo icon
+            description: updatedSkill.description,  // Campo description
+            set: updatedSkill.set,  // Campo set
+            tasks: updatedSkill.tasks,  // Campo tasks
+            resources: processedResources,  // Campo resources
+            score: updatedSkill.score  // Campo score
+        };
+        // Actualizamos el skill en el archivo JSON con la nueva información
+        skills[skillIndex] = updatedSkillData;
 
-        // Reemplazar espacios por \n para mantener el formato original
-        skills[skillIndex].text = text.replace(/ /g, '\n');
-        skills[skillIndex].description = description;
-        skills[skillIndex].icon = icon;
-
-        // Guardamos en el archivo
+        // Guardamos el archivo JSON actualizado
         fs.writeFileSync(skillsPath, JSON.stringify(skills, null, 2));
-        res.redirect(`/skills/${skillTreeName}`);
+
+        res.redirect('/skills');
     } catch (err) {
-        res.status(500).render('error', { message: 'Error al guardar los cambios del Skill' });
+        res.status(500).render('error', {
+            message: 'Error al guardar los cambios del Skill',
+            error: err
+        });
     }
 });
 
@@ -100,7 +183,7 @@ router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
         // Si lastSkill existe, tomar su id y sumarle 1, si no, el id inicial será 1
         const newId = lastSkill ? lastSkill.id + 1 : 1;
         // Manejo del icono (si se sube uno)
-        const iconPath = req.file ? req.file.path : null;
+        const iconPath = req.file ? `/electronics/icons/${req.file.filename}` : null;
         const skill = new Skill({
             id: newId,
             text,
@@ -112,13 +195,54 @@ router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
             icon: iconPath || null
         });
         await skill.save();
-        //const newSkill = await Skill.create(skillData);
         console.log('Skill guardado exitosamente con Skill.create:', skill);
-
+        updateSkillsJson({
+            id: String(skill.id),
+            text: skill.text,
+            icon: skill.icon,
+            description: skill.description,
+            set: skill.set
+        });
         res.redirect('/skills');
     } catch (error) {
         console.error(error);
         res.status(500).send('Error al crear el Skill.');
+    }
+});
+
+// POST /skills/:skillTreeName/delete/:skillID
+router.post('/:skillTreeName/delete/:skillID', async (req, res) => {
+    const Skill = req.Skill;
+    const { skillTreeName, skillID } = req.params;
+    const skillsPath = path.join(__dirname, '../scripts/skills.json');
+
+    try {
+        // 1. Eliminar la competencia de la base de datos
+        const deletedSkill = await Skill.findOneAndDelete({ id: String(skillID), set: skillTreeName },{ new:true });
+
+        if (!deletedSkill) {
+            return res.status(404).render('error', {
+                message: 'Skill no encontrado en la base de datos',
+                error: { status: 404 }
+            });
+        }
+        console.log('deletedSkill:', deletedSkill);
+
+        // 2. Eliminar la competencia del archivo JSON
+        const skills = JSON.parse(fs.readFileSync(skillsPath, 'utf8'));
+        const updatedSkills = skills.filter(skill => !(String(skill.id) === String(skillID) && skill.set === skillTreeName));
+
+        console.log('updatedSkills:', updatedSkills);
+
+        fs.writeFileSync(skillsPath, JSON.stringify(updatedSkills, null, 2));
+
+        // Redireccionar al listado de competencias
+        res.redirect('/skills');
+    } catch (err) {
+        res.status(500).render('error', {
+            message: 'Error al eliminar la competencia',
+            error: err
+        });
     }
 });
 

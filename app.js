@@ -20,6 +20,11 @@ const badgesData = require('./scripts/badges.json');
 function isAdmin(req, res, next) {
   if (req.session && req.session.user && req.session.user.admin === true) {
     return next();  // Si es admin, permite continuar
+  } else {
+    return res.status(403).render('error', {
+      message: 'No tienes permiso para realizar esta acción',
+      error: {status: 403}
+    });
   }
   res.redirect('/users/login');  // Si no es admin, redirige al login
 }
@@ -119,7 +124,7 @@ app.get('/users/register', (req, res) => {
 
 // Uso de routers
 app.use('/users', usersRouter);
-app.use('/skills', (req, res, next) => {
+app.use('/skills', isAdmin, (req, res, next) => {
   req.Skill = Skill;  // Pasa el modelo a las rutas
   next();
 }, skillsRouter);
