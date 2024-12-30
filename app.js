@@ -172,6 +172,16 @@ app.get('/users/register', (req, res) => {
   res.render('register', {success_msg, error_msg, error });
 });
 
+app.get('/about', (req, res) => {
+  const {id=null, username=null, isAdmin=req.session.user && req.session.user.admin ? req.session.user.admin : false} = req.session.user || {};
+
+  const success_msg = req.query.success_msg || '';
+  const error_msg = req.query.error_msg || '';
+  const error = req.query.error || '';
+
+  res.render('about', { id, username, isAdmin, success_msg, error_msg, error });
+});
+
 // Uso de routers
 app.use('/users', usersRouter);
 

@@ -469,32 +469,19 @@
     "set": "electronics"
   },
   {
-    "id": "69",
-    "text": "a",
-    "icon": "/electronics/icons/1735580036325-657446909.png",
-    "description": "b",
-    "set": "electronics"
-  },
-  {
-    "id": "70",
-    "text": "a",
-    "icon": "/electronics/icons/1735580369900-979317327.png",
-    "description": "b",
-    "set": "electronics"
-  },
-  {
-    "id": "71",
-    "text": "a",
-    "icon": "/electronics/icons/1735580407118-9466919.png",
-    "description": "b",
-    "set": "electronics"
-  },
-  {
-    "id": "72",
-    "text": "abc",
+    "id": 72,
+    "text": "Prueba",
     "icon": "/electronics/icons/1735580504777-852248409.png",
     "description": "bsjdsk",
-    "set": "electronics"
+    "set": "electronics",
+    "tasks": [
+      "Task 1\r",
+      "Task 2"
+    ],
+    "resources": [
+      "Aa"
+    ],
+    "score": 1
   },
   {
     "id": "73",

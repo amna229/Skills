@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script>
+        const isAdmin = "<%= JSON.stringify(isAdmin) %>";
+        console.log("isAdmin in frontend:", isAdmin);
+
+        window.isAdmin = "<%= JSON.stringify(isAdmin) %>";
+        console.log("isAdmin window in frontend:", window.isAdmin);
+
+        const username = "<%= JSON.stringify(username) %>";
+        const id = "<%= JSON.stringify(id) %>";
+        console.log("user logged in frontend index:", username);
+    </script>
+</head>
+<body>
+<% if(isAdmin){ %>
+    <%- include('partials/header', { title: 'Welcome, admin!'}) %>
+<% } else{ %>
+    <%- include('partials/username-display', { title: 'Welcome ', id: id, username: username}) %>
+<% } %>
+<main>
+    <section class="about">
+        <h1>About Us</h1>
+        <p>Welcome to our website! We are dedicated to providing the best services and products to our customers.</p>
+        <p>Our team is passionate about innovation, creativity, and excellence. Learn more about what we do and our journey.</p>
+
+        <div class="team">
+            <h2>Meet Our Team</h2>
+            <ul>
+                <li>
+                    <h3>Jane Doe</h3>
+                    <p>Founder & CEO</p>
+                </li>
+                <li>
+                    <h3>John Smith</h3>
+                    <p>Head of Engineering</p>
+                </li>
+            </ul>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
