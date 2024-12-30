@@ -13,6 +13,7 @@ const session = require('express-session');
 const Skill = require('./models/skill');
 const User = require('./models/user');
 const Badge = require('./models/badge');
+const UserSkill = require('./models/userSkill');
 const skillsData = require('./scripts/skills.json');
 const badgesData = require('./scripts/badges.json');
 
@@ -21,6 +22,11 @@ const badgesData = require('./scripts/badges.json');
 function isAdmin(req, res, next) {
   if (req.session && req.session.user && req.session.user.admin === true) {
     return next();  // Si es admin, permite continuar
+  } else {
+    return res.status(403).render('error', {
+      message: 'No tienes permiso para realizar esta acción',
+      error: {status: 403}
+    });
   }
   res.redirect('/users/login');  // Si no es admin, redirige al login
 }
@@ -37,7 +43,8 @@ const resetSkillsCollection = async () => {
     // Eliminar todos los documentos de la colección
     await Skill.deleteMany({});
     await Badge.deleteMany({});
-    console.log('Colección limpia');
+    //await UserSkill.deleteMany({});
+    console.log('Colecciones limpias.');
 
     // Insertar los nuevos datos de skills desde el archivo JSON
     const docs = await Skill.insertMany(skillsData);
@@ -45,6 +52,18 @@ const resetSkillsCollection = async () => {
     console.log(`Se han insertado ${docs.length} skills.`);
     console.log(`Se han insertado ${bdgs.length} badges.`);
 
+    // Insert dummy UserSkill data
+    /**const dummyUserSkill = new UserSkill({
+      user: new mongoose.Types.ObjectId('676df73f1976ddb24e2e8f0a'),
+      skill: 5,
+      completed: false,
+      evidence: 'Evidence 0.',
+      verified: false,
+    });
+
+    await dummyUserSkill.save();
+    console.log('Se ha insertado un registro de UserSkill.');
+    **/
   } catch (err) {
     console.log('Error al limpiar o insertar los skills:', err);
   }
@@ -55,7 +74,7 @@ const resetSkillsCollection = async () => {
 async function connectToDatabaseAndStartServer() {
   try {
     await mongoose.connect('mongodb://localhost:27017/skills');
-    console.log('Conectado a MongoDB');
+    console.log('Conectado a MongoDB.');
 
     // Inicializa la colección de skills
     await resetSkillsCollection();
@@ -123,15 +142,24 @@ app.get('/users/register', (req, res) => {
 
 // Uso de routers
 app.use('/users', usersRouter);
+
 app.use('/skills', (req, res, next) => {
-  req.Skill = Skill;  // Pasa el modelo a las rutas
+  req.Skill = Skill; // Attach the Skill model
+  req.UserSkill = UserSkill; // Attach the UserSkill model
+  console.log('Middleware execution: Attaching UserSkill model:', req.UserSkill);
   next();
 }, skillsRouter);
+
 app.use('/admin', isAdmin, (req, res, next) => {
   req.Badge = Badge;
   req.User = User;
   next();
 }, adminRouter);
+
+app.use('/api', (req, res, next) => {
+  req.Skill = Skill; // Attach Skill model
+  next();
+}, skillsRouter);
 
 // Manejo de errores 404
 app.use(function(req, res, next) {

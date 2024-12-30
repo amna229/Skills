@@ -201,4 +201,16 @@ router.get('/current-user', (req, res) => {
   }
 });
 
+router.get('/api/user/evidences', async (req, res) => {
+  try {
+    const UserSkill = require('../models/userSkill');
+    const userId = req.session.user.id; // Use session user ID
+    const evidences = await UserSkill.find({ user: userId }).select('skill evidence verified');
+    res.json(evidences);
+  } catch (error) {
+    console.error('Error fetching user evidences:', error);
+    res.status(500).json({ message: 'Error fetching user evidences' });
+  }
+});
+
 module.exports = router;
