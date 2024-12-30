@@ -31,14 +31,13 @@ function createUserRow(user) {
     changePasswordButton.className = 'default-buttons';
     changePasswordButton.addEventListener('click', () => {
         // Habilitar el campo de contraseña y el botón de cambio
-       // enablePasswordFields();
+        enablePasswordFields();
 
         // Deshabilitar otros botones de acción
-        //disableOtherActionButtons(changePasswordButton);
-        const newPassword = prompt(`Enter new password for ${user.username}:`);
-        if (newPassword) {
-            changeUserPassword(user._id, newPassword);
-        }
+        disableOtherActionButtons(changePasswordButton);
+
+        // Guardar el ID del usuario para la actualización de la contraseña
+        document.getElementById('password').dataset.userId = user._id;
     });
 
     actionsCell.appendChild(changePasswordButton);
@@ -65,10 +64,10 @@ function disableOtherActionButtons(excludeButton) {
 
 async function changeUserPassword(userId, newPassword) {
     try {
-        const response = await fetch(`/api/users/${userId}/change-password`, {
+        const response = await fetch('/admin/change-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: newPassword }),
+            body: JSON.stringify({ userId, newPassword }),
         });
         if (response.ok) {
             alert('Password changed successfully!');
@@ -80,6 +79,27 @@ async function changeUserPassword(userId, newPassword) {
     }
 }
 
+// Handle password change on form submission
+document.querySelector('button[type="submit"]').addEventListener('click', async () => {
+    const newPassword = document.getElementById('password').value;
+    const userId = document.getElementById('password').dataset.userId;
+
+    if (!newPassword) {
+        alert('Please enter a new password');
+        return;
+    }
+
+    // Call function to change password
+    await changeUserPassword(userId, newPassword);
+
+    // Clear the password field and disable it again
+    document.getElementById('password').disabled = true;
+    document.querySelector('button[type="submit"]').disabled = true;
+    tableBody.innerHTML = '';
+    // Reload the users to refresh state
+    loadUsers();
+});
+
 async function loadUsers() {
     const users = await fetchUsers();
     const tableBody = document.querySelector('#leaderboard tbody');
@@ -90,6 +110,5 @@ async function loadUsers() {
         tableBody.appendChild(row);
     });
 }
-
 // Cargar la lista de usuarios al cargar la página
 document.addEventListener('DOMContentLoaded', loadUsers);
