@@ -149,7 +149,7 @@ router.get('/logout', (req, res) => {
         res.redirect('/skills'); // Redirigir a la página principal en caso de error
       }else{
         //res.redirect('/users/login?mensajeLogout=You+have+logged+out+successfully.');
-        res.redirect('/skills?success_msg=You have logged out successfully');
+        res.redirect('/users/login?success_msg=You have logged out successfully');
       }
     });
   } else {
