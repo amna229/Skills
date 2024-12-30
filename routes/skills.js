@@ -119,35 +119,55 @@ router.get('/:skillTreeName/view/:skillID', async (req, res) => {
     }
 });
 
-// POST /skills/:skillTreeName/:skillID/verify
 router.post('/:skillTreeName/:skillID/verify', async (req, res) => {
     const { skillTreeName, skillID } = req.params;
     const { userSkillId, approved } = req.body;
-    const UserSkill = req.UserSkill;
-    const User = req.User;
+    const UserSkill = require('../models/userSkill');
+    const User = require('../models/user');
+    const Skill = require('../models/skill');
 
     try {
-        const userSkill = await UserSkill.findById(userSkillId);
+        // Validate UserSkill model
+        if (!UserSkill || typeof UserSkill.findById !== 'function') {
+            throw new Error('UserSkill is not a valid model');
+        }
+
+        console.log('Attached userSkillId in request:', userSkillId);
+
+        // Find UserSkill by ID
+        const userSkill = await UserSkill.findById(new mongoose.Types.ObjectId(userSkillId));
         if (!userSkill) {
             return res.status(404).json({ success: false, message: 'UserSkill not found' });
         }
 
-        const verifier = await User.findById(req.session.user.id);
+        // Find the verifier (current user)
+        const verifier = await User.findById(new mongoose.Types.ObjectId(req.session.user.id));
         if (!verifier) {
             return res.status(403).json({ success: false, message: 'Unauthorized' });
         }
 
+        // Add verification to the UserSkill
         const verification = {
             user: verifier._id,
             approved: approved === 'true',
-            verifiedAt: new Date()
+            verifiedAt: new Date(),
         };
-
         userSkill.verifications.push(verification);
 
-        // Check if skill should be marked as verified
-        if (verifier.admin || userSkill.verifications.filter(v => v.approved).length >= 3) {
+        // Mark the UserSkill as verified if conditions are met
+        if (verifier.admin || userSkill.verifications.filter((v) => v.approved).length >= 3) {
             userSkill.verified = true;
+
+            // Add the skill's score to the user's total score
+            const skill = await Skill.findOne({ id: skillID }); // Use your custom `id` field
+            if (skill) {
+                const owner = await User.findById(userSkill.user);
+                if (owner) {
+                    owner.score += skill.score; // Add skill score to user's total score
+                    await owner.save();
+                    console.log(`Added ${skill.score} point(s) to user ${owner.username}`);
+                }
+            }
         }
 
         await userSkill.save();
