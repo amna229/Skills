@@ -1,68 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
-    fetch('/skills.json')
+    // Fetch skills from the server
+    fetch('/skills/api/skills')
         .then(r => r.json())
         .then(skills => {
             const svgContainer = document.querySelector('.svg-container');
-            // Retrieve evidenceData from localStorage or initialize an empty object
-            const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
+            const allSkillsInfo = [];
 
             // Function to update the evidence counter badge for a specific skill
-            const updateCountBadge = (skillId) => {
-                const evidenceData = JSON.parse(localStorage.getItem('evidenceData')) || {};
-                const skillEvidence = evidenceData[skillId] || [];
-                const unverifiedEvidence = skillEvidence.filter(evidence => !evidence.accepted); // Exclude accepted evidence
-                const unverifiedEvidenceCounter = unverifiedEvidence.length;
-
+            const updateCountBadge = (skillId, unverifiedCount, verifiedCount) => {
                 const redCircle = document.querySelector(`.red-circle[data-id="${skillId}"]`);
                 if (redCircle) {
-                    redCircle.textContent = unverifiedEvidenceCounter.toString(); // Update badge text
-                    redCircle.style.display = unverifiedEvidenceCounter > 0 ? 'flex' : 'none'; // Show or hide badge
-                    console.log(`Badge with skill id: ${skillId} updated to: ${unverifiedEvidenceCounter}.`);
+                    redCircle.textContent = unverifiedCount.toString(); // Update badge text
+                    redCircle.style.display = unverifiedCount > 0 ? 'flex' : 'none'; // Show or hide badge
                 }
-
-                const skillData = JSON.parse(localStorage.getItem('skillData')) || {};
-                const skillVerification = skillData[skillId] || [];const verifiedEvidenceCounter = skillVerification.verified ? 1 : 0;
-                console.log(skillVerification)
-                console.log(verifiedEvidenceCounter)
 
                 const greenCircle = document.querySelector(`.green-circle[data-id="${skillId}"]`);
                 if (greenCircle) {
-                    greenCircle.textContent = verifiedEvidenceCounter.toString(); // Update badge text
-                    greenCircle.style.display = verifiedEvidenceCounter > 0 ? 'flex' : 'none'; // Show or hide badge
-                    console.log(`Badge with skill id: ${skillId} verified with counter set to: ${verifiedEvidenceCounter}.`);
+                    greenCircle.textContent = verifiedCount.toString(); // Update badge text
+                    greenCircle.style.display = verifiedCount > 0 ? 'flex' : 'none'; // Show or hide badge
+                }
 
-                    // Update UI when skill is verified
-                    if (greenCircle.style.display == 'flex' && redCircle) {
-                        redCircle.style.display = 'none';
+                // Mark skill as verified if necessary
+                if (verifiedCount > 0 && redCircle) {
+                    redCircle.style.display = 'none';
 
-                        // Change skill hexagon style to verified
-                        // Select the svg-wrapper with the corresponding data-id
-                        const wrapper = document.querySelector(`.svg-wrapper[data-id="${skillId}"]`);
-
-                        if (wrapper) {
-                            // Select the polygon inside the specific svg-wrapper
-                            const skillElement = wrapper.querySelector(`polygon[data-id="${skillId}"]`);
-
-                            if (skillElement) {
-                                // Replace or add the completed-skill class
-                                if (skillElement.classList.contains("hexagon")) {
-                                    skillElement.classList.replace("hexagon", "hexagon-completed-skill");
-                                } else {
-                                    skillElement.classList.add("hexagon-completed-skill");
-                                }
-                                console.log(`Skill ${skillId} marked as verified.`);
-                            } else {
-                                console.error(`No polygon element found within wrapper for skillId: ${skillId}`);
-                            }
-                        } else {
-                            console.error(`No svg-wrapper element found for skillId: ${skillId}`);
+                    const wrapper = document.querySelector(`.svg-wrapper[data-id="${skillId}"]`);
+                    if (wrapper) {
+                        const skillElement = wrapper.querySelector(`polygon[data-id="${skillId}"]`);
+                        if (skillElement) {
+                            skillElement.classList.replace("hexagon", "hexagon-completed-skill");
                         }
                     }
                 }
             };
 
-            const allSkillsInfo=[];
-
+            // Populate the UI with skills
             skills.forEach(skill => {
                 const svgWrapper = document.createElement('div');
                 svgWrapper.classList.add('svg-wrapper');
@@ -86,8 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 text.setAttribute("fill", "black");
                 text.setAttribute("font-size", "10");
 
-                allSkillsInfo.push(skill);
-
                 const content = skill.text.split('\n');
                 content.forEach((line, index) => {
                     const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
@@ -105,26 +75,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 image.setAttribute("height", "30");
                 image.setAttribute('href', `${skill.icon}`);
 
-                // Create a red circle for the unverified evidence counter badge
+                // Evidence counters
                 const redCircle = document.createElement('div');
                 redCircle.classList.add('red-circle');
-                redCircle.setAttribute('data-id', skill.id); // Add data-id
+                redCircle.setAttribute('data-id', skill.id);
                 svgWrapper.appendChild(redCircle);
 
-                // Create a green circle for the verified counter badge
                 const greenCircle = document.createElement('div');
                 greenCircle.classList.add('green-circle');
-                greenCircle.setAttribute('data-id', skill.id); // Add data-id
+                greenCircle.setAttribute('data-id', skill.id);
                 svgWrapper.appendChild(greenCircle);
 
-                console.log("Añadiendo SVG para skill:", skill.id);
                 svg.appendChild(polygon);
                 svg.appendChild(text);
                 svg.appendChild(image);
                 svgWrapper.appendChild(svg);
                 svgContainer.appendChild(svgWrapper);
 
-                // Canvas for icons
+                // Canvas for pencil and notebook icons
                 const canvas = document.createElement('canvas');
                 canvas.width = 100;
                 canvas.height = 100;
@@ -138,78 +106,58 @@ document.addEventListener("DOMContentLoaded", () => {
                 pencilIcon.src = '../electronics/pencil.svg';
                 notebookIcon.src = '../electronics/notebook.svg';
 
-                if(isAdmin === "true") {
-                    pencilIcon.onload = () => {
-                        context.drawImage(pencilIcon, 10, 70, 20, 20);
-
-                        canvas.addEventListener("click", (event) => {
-
-                            const rect = canvas.getBoundingClientRect();
-                            const scaleX = canvas.width / rect.width;
-                            const scaleY = canvas.height / rect.height;
-                            const x = (event.clientX - rect.left) * scaleX;
-                            const y = (event.clientY - rect.top) * scaleY;
-
-                            const pencilBounds = {
-                                x: 10,
-                                y: 70,
-                                width: 20,
-                                height: 20
-                            };
-
-                            const whenClickP = x >= pencilBounds.x && x <= pencilBounds.x + pencilBounds.width && y >= pencilBounds.y && y <= pencilBounds.y + pencilBounds.height;
-
-                            if (whenClickP) {
-                                const isVerified = polygon.classList.contains("hexagon-completed-skill");
-                                if (!isVerified) {
-                                    localStorage.setItem('actSkill', skill.id);
-                                    const svgData = new XMLSerializer().serializeToString(svg);
-                                    localStorage.setItem(`skillsvg${skill.id}`, svgData);
-                                    // Aquí construimos la URL correctamente
-                                    const skillTreeName = skill.set; // O obtenerlo dinámicamente si es necesario
-                                    const skillID = skill.id;
-                                    localStorage.setItem('actSkill', skillID);
-                                    const url = `/skills/${skillTreeName}/edit/${skillID}`;
-                                    window.open(url, '_blank');  // Abrir la página en una nueva pestaña
-                                }
-                            }
-                        });
-                    };
-                }
+                pencilIcon.onload = () => {
+                    context.drawImage(pencilIcon, 10, 70, 20, 20);
+                };
 
                 notebookIcon.onload = () => {
                     context.drawImage(notebookIcon, 70, 70, 20, 20);
-
-                    canvas.addEventListener("click", (event) => {
-
-                        const rect = canvas.getBoundingClientRect();
-                        const scaleX = canvas.width / rect.width;
-                        const scaleY = canvas.height / rect.height;
-                        const x = (event.clientX - rect.left) * scaleX;
-                        const y = (event.clientY - rect.top) * scaleY;
-
-                        const notebookBounds = {
-                            x: 70,
-                            y: 70,
-                            width: 20,
-                            height: 20
-                        };
-
-                        const whenClickNb = x >= notebookBounds.x && x <= notebookBounds.x + notebookBounds.width && y >= notebookBounds.y && y <= notebookBounds.y + notebookBounds.height;
-
-                        if (whenClickNb) {
-                            const isVerified = polygon.classList.contains("hexagon-completed-skill");
-                            if (!isVerified) {
-                                localStorage.setItem('actSkill', skill.id);
-                                const svgData = new XMLSerializer().serializeToString(svg);
-                                localStorage.setItem(`skillsvg${skill.id}`, svgData);
-                                window.open('/especificacionesComp', '_blank');
-                            }
-                        }
-                    });
                 };
 
+                canvas.addEventListener("click", (event) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    const x = (event.clientX - rect.left) * scaleX;
+                    const y = (event.clientY - rect.top) * scaleY;
 
+                    // Pencil bounds
+                    const pencilBounds = { x: 10, y: 70, width: 20, height: 20 };
+                    const notebookBounds = { x: 70, y: 70, width: 20, height: 20 };
+
+                    if (
+                        x >= pencilBounds.x &&
+                        x <= pencilBounds.x + pencilBounds.width &&
+                        y >= pencilBounds.y &&
+                        y <= pencilBounds.y + pencilBounds.height
+                    ) {
+                        const skillTreeName = skill.set;
+                        const skillID = skill.id;
+                        localStorage.setItem('actSkill', skillID);
+                        const url = `/skills/${skillTreeName}/edit/${skillID}`;
+                        window.open(url, '_blank');
+                    } else if (
+                        x >= notebookBounds.x &&
+                        x <= notebookBounds.x + notebookBounds.width &&
+                        y >= notebookBounds.y &&
+                        y <= notebookBounds.y + notebookBounds.height
+                    ) {
+                        localStorage.setItem('actSkill', skill.id);
+                        window.open('/especificacionesComp', '_blank');
+                    }
+                });
+
+                // Fetch evidence counts for this skill
+                fetch(`/skills/${skill.set}/${skill.id}/evidence-counts`)
+                    .then(res => res.json())
+                    .then(({ unverifiedCount, verifiedCount }) => {
+                        updateCountBadge(skill.id, unverifiedCount, verifiedCount);
+                    })
+                    .catch(err => console.error(`Error fetching evidence counts for skill ${skill.id}:`, err));
+
+                allSkillsInfo.push(skill);
+
+                // Add mouseover and mouseout events
                 svgWrapper.addEventListener("mouseover", () => {
                     const isVerified = polygon.classList.contains("hexagon-completed-skill");
                     if (!isVerified) {
@@ -217,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         canvas.style.display = 'block';
 
                         const footer = document.createElement('footer');
-                        footer.textContent = 'description of the skill ' + skill.id + ' ' + skill.description;
+                        footer.textContent = `Description: ${skill.description}`;
                         footer.classList.add('footer');
                         svgContainer.appendChild(footer);
                     }
@@ -225,26 +173,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 svgWrapper.addEventListener("mouseout", () => {
                     const isVerified = polygon.classList.contains("hexagon-completed-skill");
-                        if (!isVerified) {
+                    if (!isVerified) {
                         svgWrapper.classList.remove("hovered");
                         canvas.style.display = 'none';
                         const footer = document.querySelector('.footer');
                         if (footer) footer.remove();
                     }
                 });
-
-                // Update all unverified evidence counter badges on page load
-                updateCountBadge(skill.id);
-
             });
 
+            // Store all skills info in localStorage
             localStorage.setItem('allSkillsInfo', JSON.stringify(allSkillsInfo));
-
         })
         .catch(error => console.error("Error loading skills: ", error));
 
-    window.addEventListener('unload', () => {
-        localStorage.removeItem('allSkillsInfo');
-        localStorage.removeItem('actSkill');
+    // Keep active skill logic in localStorage
+    window.addEventListener("unload", () => {
+        localStorage.removeItem('allSkillsInfo'); // Clear all skills info when user leaves the page
     });
 });

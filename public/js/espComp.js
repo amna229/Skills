@@ -1,21 +1,29 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    // Retrieve active skill from localStorage
     let actSkill = localStorage.getItem('actSkill');
     let skill = null;
 
-    const allSkillsInfo = JSON.parse(localStorage.getItem('allSkillsInfo'));
-    console.log(allSkillsInfo);
+    // Fetch all skills from the database and find the active skill
+    try {
+        const skillsResponse = await fetch('/skills/api/skills'); // API endpoint to fetch all skills
+        if (skillsResponse.ok) {
+            const allSkillsInfo = await skillsResponse.json();
+            console.log("Fetched all skills:", allSkillsInfo);
 
-    for (let i = 0; i < allSkillsInfo.length; i++) {
-        if (allSkillsInfo[i].id == actSkill) {
-            skill = allSkillsInfo[i];
-            break;
+            // Find the active skill in the fetched data
+            skill = allSkillsInfo.find(s => s.id == actSkill);
+        } else {
+            console.error("Failed to fetch skills.");
         }
+    } catch (error) {
+        console.error("Error fetching skills:", error);
     }
 
+    // Display the active skill's details
     if (skill) {
         let skillText = skill.text;
-        document.getElementById('skilltxt').innerHTML = '<strong>Skill: ' + skillText + '</strong>';
-        document.getElementById('skillDesc').innerText = 'Space for the description of the skill: ' + skill.description;
+        document.getElementById('skilltxt').innerHTML = `<strong>Skill: ${skillText}</strong>`;
+        document.getElementById('skillDesc').innerText = `Space for the description of the skill: ${skill.description}`;
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', "svg");
         svg.setAttribute("width", "100");
@@ -78,32 +86,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     const unverifiedSubmissions = document.getElementById("unverifiedSubmissions");
     const unverifiedContainer = document.getElementById("unverified-evidences-container");
 
-    // Fetch unverified evidences from the backend
-    try {
-        const response = await fetch(`/skills/${skill.set}/${skill.id}/evidence`);
-        if (response.ok) {
-            const evidences = await response.json();
+    // Fetch unverified evidences for the active skill
+    if (skill) {
+        try {
+            const evidenceResponse = await fetch(`/skills/${skill.set}/${skill.id}/evidence`);
+            if (evidenceResponse.ok) {
+                const evidences = await evidenceResponse.json();
 
-            if (evidences.length > 0) {
-                unverifiedContainer.style.display = "block";
-                evidences.forEach(evidenceEntry => {
-                    const newRow = document.createElement("tr");
-                    newRow.innerHTML = `
-                        <td>${evidenceEntry.user.username}</td>
-                        <td>${evidenceEntry.evidence}</td>
-                        <td>
-                            <button class="btn btn-success btn-sm" data-id="${evidenceEntry._id}">Approve</button>
-                            <button class="btn btn-danger btn-sm" data-id="${evidenceEntry._id}">Reject</button>
-                        </td>
-                    `;
-                    unverifiedSubmissions.appendChild(newRow);
-                });
+                if (evidences.length > 0) {
+                    unverifiedContainer.style.display = "block";
+                    evidences.forEach(evidenceEntry => {
+                        const newRow = document.createElement("tr");
+                        newRow.innerHTML = `
+                            <td>${evidenceEntry.user.username}</td>
+                            <td>${evidenceEntry.evidence}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" data-id="${evidenceEntry._id}">Approve</button>
+                                <button class="btn btn-danger btn-sm" data-id="${evidenceEntry._id}">Reject</button>
+                            </td>
+                        `;
+                        unverifiedSubmissions.appendChild(newRow);
+                    });
+                }
+            } else {
+                console.error("Failed to fetch unverified evidences.");
             }
-        } else {
-            console.error("Failed to fetch unverified evidences.");
+        } catch (error) {
+            console.error("Error fetching unverified evidences:", error);
         }
-    } catch (error) {
-        console.error("Error fetching unverified evidences:", error);
     }
 
     document.getElementById("evidenceButton").addEventListener("click", async (event) => {
@@ -119,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const response = await fetch(`/skills/${skill.set}/submit-evidence`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ skillId: Number(skill.id), evidence: evidenceText }), // Pass skillId as a number
+                body: JSON.stringify({ skillId: Number(skill.id), evidence: evidenceText }),
             });
 
             if (response.ok) {

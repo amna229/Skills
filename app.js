@@ -147,6 +147,11 @@ app.use('/admin', isAdmin, (req, res, next) => {
   next();
 }, adminRouter);
 
+app.use('/api', (req, res, next) => {
+  req.Skill = Skill; // Attach Skill model
+  next();
+}, skillsRouter);
+
 // Manejo de errores 404
 app.use(function(req, res, next) {
   next(createError(404));

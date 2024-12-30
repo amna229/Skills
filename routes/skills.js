@@ -230,4 +230,49 @@ router.get('/:skillTreeName/:skillId/evidence', async (req, res) => {
     }
 });
 
+// GET /skills/:skillSet/:skillId/evidence-counts
+router.get('/:skillSet/:skillId/evidence-counts', async (req, res) => {
+    const { skillSet, skillId } = req.params;
+    const UserSkill = require('../models/userSkill');
+
+    if (!req.session || !req.session.user) {
+        return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    try {
+        // Fetch evidence data for the current user and the specified skill
+        const userId = req.session.user.id;
+
+        const userSkills = await UserSkill.find({
+            user: userId,
+            skill: Number(skillId),
+        });
+
+        const unverifiedCount = userSkills.filter(e => !e.verified).length;
+        const verifiedCount = userSkills.filter(e => e.verified).length;
+
+        res.json({
+            unverifiedCount,
+            verifiedCount,
+        });
+    } catch (error) {
+        console.error('Error fetching evidence counts:', error);
+        res.status(500).json({ error: 'Failed to fetch evidence counts' });
+    }
+});
+
+// GET /api/skills
+router.get('/api/skills', async (req, res) => {
+    const Skill = require('../models/skill');
+
+    try {
+        // Fetch all skills from the database
+        const skills = await Skill.find().sort({ id: 1 }); // Sort by skill ID
+        res.json(skills);
+    } catch (error) {
+        console.error('Error fetching skills:', error);
+        res.status(500).json({ error: 'Failed to fetch skills' });
+    }
+});
+
 module.exports = router;
