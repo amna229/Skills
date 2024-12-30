@@ -2,10 +2,21 @@ var express = require('express');
 const fs = require('fs');
 const path = require('path');
 var router = express.Router();
+const Skill = require('../models/skill');
+const UserSkill = require('../models/userSkill');
 
 router.get('/', function(req, res, next) {
-    const isAdmin = req.session.admin || false;
-    res.render('index', { isAdmin });
+
+    // const isAdmin = req.session.user && req.session.user.admin ? req.session.user.admin : false;
+
+    const {id=null, username=null, isAdmin=req.session.user && req.session.user.admin ? req.session.user.admin : false} = req.session.user || {};
+
+    const success_msg = req.query.success_msg || '';
+    const error_msg = req.query.error_msg || '';
+    const error = req.query.error || '';
+
+    res.render('index', { id, username, isAdmin, success_msg, error_msg, error });
+
 });
 
 // Ruta para mostrar el formulario de edición de un Skill
@@ -60,6 +71,7 @@ router.post('/:skillTreeName/edit/:skillID', async (req, res) => {
 // Formulario para añadir Skill (GET)
 router.get('/:skillTreeName/add', (req, res) => {
     const { skillTreeName } = req.params;
+    const success_msg = req.query.success_msg || '';
     const skill = {
         text: '',
         description: '',
@@ -68,12 +80,15 @@ router.get('/:skillTreeName/add', (req, res) => {
         score: 1,
         icon: ''
     };
-    res.render('add-skill', { skillTreeName, skill });
+    res.render('add-skill', { skillTreeName, skill, success_msg, error_msg:'', error:'' });
 });
 
 // Añadir Skill (POST)
 router.post('/:skillTreeName/add', async (req, res) => {
     const { skillTreeName } = req.params;
+
+
+    console.log("success and error ",success_msg, error_msg);
     const { text, description, tasks, resources, score, icon } = req.body;
 
     try {
@@ -87,10 +102,19 @@ router.post('/:skillTreeName/add', async (req, res) => {
             icon,
         });
         await newSkill.save();
-        res.redirect(`/skills/${skillTreeName}`);
+        res.redirect(`/skills/${skillTreeName}?success_msg=Skill added successfully`);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error al crear el Skill.');
+        // res.status(500).send('Error al crear el Skill.');
+
+        res.render('add-skill', {
+            skillTreeName,
+            skill: { text, description, tasks, resources, score, icon },
+            success_msg: '',
+            error_msg: 'Failed to add skill',
+            error: error.message
+        });
+
     }
 });
 
@@ -203,6 +227,28 @@ router.post('/:skillTreeName/submit-evidence', async (req, res) => {
         console.error('Error al enviar evidencia:', error);
         res.status(500).json({ success: false, message: 'Error al enviar la evidencia' });
     }
+});
+
+// POST /skills/:skillTreeName/delete/:skillID
+router.post('/:skillTreeName/delete/:skillID', async(req, res) =>{
+
+    const { skillTreeName, skillID } = req.params;
+    const Skill = req.Skill;
+
+    try {
+        const skill = await Skill.findOne({ id: skillID, set: skillTreeName });
+        if (!skill) {
+            return res.status(404).send('Skill no encontrado');
+        }
+
+        await skill.remove();
+        res.redirect(`/skills/${skillTreeName}`);
+
+    } catch (error) {
+        console.error('Error al eliminar el skill:', error);
+        res.status(500).send('Error al eliminar el skill');
+    }
+
 });
 
 module.exports = router;

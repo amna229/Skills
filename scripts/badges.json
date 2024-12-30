@@ -3,138 +3,138 @@
     "name": "Observador",
     "bitpoints_min": 0,
     "bitpoints_max": 9,
-    "image_url": "00-observador-min.png"
+    "image_url": "/00-observador-min.png"
   },
   {
     "name": "Aspirante a Cadete",
     "bitpoints_min": 10,
     "bitpoints_max": 19,
-    "image_url": "01-Aspirante-cadete-min.png"
+    "image_url": "/01-Aspirante-cadete-min.png"
   },
   {
     "name": "Cadete",
     "bitpoints_min": 20,
     "bitpoints_max": 29,
-    "image_url": "02-cadete-min.png"
+    "image_url": "/02-cadete-min.png"
   },
   {
     "name": "Cadete nivel-1",
     "bitpoints_min": 30,
     "bitpoints_max": 39,
-    "image_url": "03-cadete-N1-min.png"
+    "image_url": "/03-cadete-N1-min.png"
   },
   {
     "name": "Cadete nivel-2",
     "bitpoints_min": 40,
     "bitpoints_max": 49,
-    "image_url": "04-cadete-N2-min.png"
+    "image_url": "/04-cadete-N2-min.png"
   },
   {
     "name": "Cadete nivel-3",
     "bitpoints_min": 50,
     "bitpoints_max": 59,
-    "image_url": "05-cadete-N3-min.png"
+    "image_url": "/05-cadete-N3-min.png"
   },
   {
     "name": "Aspirante a Padawan",
     "bitpoints_min": 60,
     "bitpoints_max": 69,
-    "image_url": "06-Aspirante-padawan-min.png"
+    "image_url": "/06-Aspirante-padawan-min.png"
   },
   {
     "name": "Aspirante a Padawan Nivel 1",
     "bitpoints_min": 70,
     "bitpoints_max": 79,
-    "image_url": "07-Aspirante-padawan-N1-min.png"
+    "image_url": "/07-Aspirante-padawan-N1-min.png"
   },
   {
     "name": "Aspirante a Padawan Nivel 2",
     "bitpoints_min": 80,
     "bitpoints_max": 89,
-    "image_url": "08-Aspirante-padawan-N2-min.png"
+    "image_url": "/08-Aspirante-padawan-N2-min.png"
   },
   {
     "name": "Aspirante a Padawan Nivel 3",
     "bitpoints_min": 90,
     "bitpoints_max": 99,
-    "image_url": "09-Aspirante-padawan-N3-min.png"
+    "image_url": "/09-Aspirante-padawan-N3-min.png"
   },
   {
     "name": "Padawan",
     "bitpoints_min": 100,
     "bitpoints_max": 109,
-    "image_url": "10-Padawan-min.png"
+    "image_url": "/10-Padawan-min.png"
   },
   {
     "name": "Padawan Nivel 1",
     "bitpoints_min": 110,
     "bitpoints_max": 119,
-    "image_url": "11-Padawan-N1-min.png"
+    "image_url": "/11-Padawan-N1-min.png"
   },
   {
     "name": "Padawan Nivel 2",
     "bitpoints_min": 120,
     "bitpoints_max": 129,
-    "image_url": "12-Padawan-N2-min.png"
+    "image_url": "/12-Padawan-N2-min.png"
   },
   {
     "name": "Padawan Nivel 3",
     "bitpoints_min": 130,
     "bitpoints_max": 139,
-    "image_url": "13-Padawan-N3-min.png"
+    "image_url": "/13-Padawan-N3-min.png"
   },
   {
     "name": "Aspirante a Jedi",
     "bitpoints_min": 140,
     "bitpoints_max": 149,
-    "image_url": "14-Aspirante-jedi-min.png"
+    "image_url": "/14-Aspirante-jedi-min.png"
   },
   {
     "name": "Aspirante a Jedi Nivel 1",
     "bitpoints_min": 150,
     "bitpoints_max": 159,
-    "image_url": "15-Aspirante-jedi-N1-min.png"
+    "image_url": "/15-Aspirante-jedi-N1-min.png"
   },
   {
     "name": "Aspirante a Jedi Nivel 2",
     "bitpoints_min": 160,
     "bitpoints_max": 169,
-    "image_url": "16-Aspirante-jedi-N2-min.png"
+    "image_url": "/16-Aspirante-jedi-N2-min.png"
   },
   {
     "name": "Aspirante a Jedi Nivel 3",
     "bitpoints_min": 170,
     "bitpoints_max": 179,
-    "image_url": "17-Aspirante-jedi-N3-min.png"
+    "image_url": "/17-Aspirante-jedi-N3-min.png"
   },
   {
     "name": "Jedi",
     "bitpoints_min": 180,
     "bitpoints_max": 189,
-    "image_url": "18-Jedi-min.png"
+    "image_url": "/18-Jedi-min.png"
   },
   {
     "name": "Jedi Nivel 1",
     "bitpoints_min": 190,
     "bitpoints_max": 199,
-    "image_url": "19-Jedi-N1-min.png"
+    "image_url": "/19-Jedi-N1-min.png"
   },
   {
     "name": "Jedi Nivel 2",
     "bitpoints_min": 200,
     "bitpoints_max": 209,
-    "image_url": "20-Jedi-N2-min.png"
+    "image_url": "/20-Jedi-N2-min.png"
   },
   {
     "name": "Jedi Nivel 3",
     "bitpoints_min": 210,
     "bitpoints_max": 219,
-    "image_url": "21-Jedi-N3-min.png"
+    "image_url": "/21-Jedi-N3-min.png"
   },
   {
     "name": "Caballero Jedi",
     "bitpoints_min": 220,
     "bitpoints_max": 229,
-    "image_url": "22-Caballero-Jedi-min.png"
+    "image_url": "/22-Caballero-Jedi-min.png"
   }
 ]
