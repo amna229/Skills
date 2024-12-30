@@ -3,50 +3,47 @@ const mongoose = require('mongoose');
 const userSkillSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Reference to User model
-        required: true
+        ref: 'User',
+        required: true,
     },
     skill: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Skill', // Reference to Skill model
-        required: true
+        type: Number, // Refer to the `id` field in the Skill model
+        required: true,
     },
     completed: {
         type: Boolean,
-        default: false
+        default: false,
     },
     completedAt: {
         type: Date,
-        default: null
+        default: null,
     },
     evidence: {
         type: String,
-        default: null
+        default: null,
     },
     verified: {
         type: Boolean,
-        default: false
+        default: false,
     },
     verifications: [
         {
             user: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'User', // Reference to User model
-                required: true
+                ref: 'User',
+                required: true,
             },
             approved: {
                 type: Boolean,
-                required: true
+                required: true,
             },
             verifiedAt: {
                 type: Date,
-                default: null
-            }
-        }
-    ]
+                default: null,
+            },
+        },
+    ],
 });
 
-// Crear y exportar el modelo de UserSkill
 const UserSkill = mongoose.model('UserSkill', userSkillSchema);
 module.exports = UserSkill;
-
