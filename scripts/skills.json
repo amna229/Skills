@@ -42,39 +42,32 @@
     "set": "electronics"
   },
   {
-    "id": "7",
-    "text": "Learn Ohm’s\nLaw",
-    "icon": "/electronics/icons/icon7.svg",
-    "description": "",
-    "set": "electronics"
-  },
-  {
-    "id": "8",
-    "text": "Fix something\nsomething\nthat’s broken",
+    "id": 8,
+    "text": "Fix something\r\nsomething\r\nthat’s broken",
     "icon": "/electronics/icons/icon8.svg",
-    "description": "",
-    "set": "electronics"
+    "description": "z",
+    "set": "electronics",
+    "tasks": [
+      "a"
+    ],
+    "resources": [
+      "a"
+    ],
+    "score": 2
   },
   {
-    "id": "9",
-    "text": "Measure \nvoltage with \na multimeter",
+    "id": 9,
+    "text": "Measure \r\nvoltage with \r\na multimeter",
     "icon": "/electronics/icons/icon9.svg",
-    "description": "",
-    "set": "electronics"
-  },
-  {
-    "id": "10",
-    "text": "Learn to\nread a schematic",
-    "icon": "/electronics/icons/icon10.svg",
-    "description": "",
-    "set": "electronics"
-  },
-  {
-    "id": "11",
-    "text": "Learn to read\na datasheet",
-    "icon": "/electronics/icons/icon11.svg",
-    "description": "",
-    "set": "electronics"
+    "description": "aaa",
+    "set": "electronics",
+    "tasks": [
+      "aaa"
+    ],
+    "resources": [
+      "aaa"
+    ],
+    "score": 2
   },
   {
     "id": "12",
@@ -473,6 +466,41 @@
     "text": "Write your  \n own C/C++ library \n for a sensor \n from scratch",
     "icon": "/electronics/icons/icon68.svg",
     "description": "",
+    "set": "electronics"
+  },
+  {
+    "id": "69",
+    "text": "a",
+    "icon": "/electronics/icons/1735580036325-657446909.png",
+    "description": "b",
+    "set": "electronics"
+  },
+  {
+    "id": "70",
+    "text": "a",
+    "icon": "/electronics/icons/1735580369900-979317327.png",
+    "description": "b",
+    "set": "electronics"
+  },
+  {
+    "id": "71",
+    "text": "a",
+    "icon": "/electronics/icons/1735580407118-9466919.png",
+    "description": "b",
+    "set": "electronics"
+  },
+  {
+    "id": "72",
+    "text": "abc",
+    "icon": "/electronics/icons/1735580504777-852248409.png",
+    "description": "bsjdsk",
+    "set": "electronics"
+  },
+  {
+    "id": "73",
+    "text": "aaaaaa",
+    "icon": "/electronics/icons/1735581492525-535253143.png",
+    "description": "aaaaaaaa",
     "set": "electronics"
   }
 ]

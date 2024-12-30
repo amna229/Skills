@@ -120,9 +120,31 @@ app.use('/badges', express.static(path.join(__dirname,'badges')));
 // Rutas personalizadas
 
 // Ruta para cargar las medallas y los puntos
-app.get('/leaderboard', (req, res) => {
+/*app.get('/leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'leaderboard.html'));
+});*/
+
+app.get('/leaderboard', async (req, res) => {
+  try {
+    const users = await User.find();
+
+    console.log('User ID from session:', req.session.user._id);
+
+    console.log('Session user:', req.session.user);
+
+
+    res.render('leaderboard', {
+      title: 'Welcome, ' + req.session.user.username,
+      username: req.session.user.username, // Pass username to the template
+      id: req.session.user.id,
+      isAdmin: req.session.user.admin || false,
+    });
+  } catch (error) {
+    console.error('Error loading leaderboard:', error);
+    res.status(500).send('Error loading leaderboard');
+  }
 });
+
 
 // Ruta para cargar especificacionesComp
 app.get('/especificacionesComp', (req, res) => {
@@ -132,12 +154,22 @@ app.get('/especificacionesComp', (req, res) => {
 // Ruta para cargar login
 app.get('/users/login', (req, res) => {
   const mensajeLogout = req.query.mensajeLogout;
-  res.render('login', { mensajeLogout });
+
+  const success_msg = req.query.success_msg || '';
+  const error_msg = req.query.error_msg || '';
+  const error = req.query.error || '';
+
+  res.render('login', { mensajeLogout, success_msg, error_msg, error });
 });
 
 // Ruta para cargar register
 app.get('/users/register', (req, res) => {
-  res.render('register');
+
+  const success_msg = req.query.success_msg || '';
+  const error_msg = req.query.error_msg || '';
+  const error = req.query.error || '';
+
+  res.render('register', {success_msg, error_msg, error });
 });
 
 // Uso de routers

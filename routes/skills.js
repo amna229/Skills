@@ -65,7 +65,10 @@ router.get('/', function(req, res, next) {
 // Ruta para mostrar el formulario de edición de un Skill
 router.get('/:skillTreeName/edit/:skillID', async (req, res) => {
     const { skillTreeName, skillID } = req.params;
-    const Skill = req.Skill; // Obtén el modelo desde req
+    const Skill = req.Skill;
+    const success_msg = req.query.success_msg || '';
+    const error_msg = req.query.error_msg || '';
+    const error = req.query.error || '';
 
     try {
         // Buscamos el skill en la base de datos usando el ID
@@ -74,7 +77,7 @@ router.get('/:skillTreeName/edit/:skillID', async (req, res) => {
             return res.status(404).send('Skill no encontrado');
             //return res.status(404).render('error', { message: 'Skill no encontrado' });
         }
-        res.render('edit-skill', { skill, skillTreeName });
+        res.render('edit-skill', { skill, skillTreeName, success_msg, error_msg, error });
     } catch (err) {
         console.error('Error al buscar el skill:', err);
         return res.status(500).send('Error en la base de datos');
@@ -144,10 +147,12 @@ router.post('/:skillTreeName/edit/:skillID', upload.single('icon'), async (req, 
         // Guardamos el archivo JSON actualizado
         fs.writeFileSync(skillsPath, JSON.stringify(skills, null, 2));
 
-        res.redirect('/skills');
+        res.redirect('/skills?success_msg=Skill updated successfully');
     } catch (err) {
         res.status(500).render('error', {
-            message: 'Error al guardar los cambios del Skill',
+            //message: 'Error al guardar los cambios del Skill',
+            success_msg: '',
+            error_msg: 'Failed to update skill',
             error: err
         });
     }
@@ -157,6 +162,9 @@ router.post('/:skillTreeName/edit/:skillID', upload.single('icon'), async (req, 
 router.get('/:skillTreeName/add', (req, res) => {
     const { skillTreeName } = req.params;
     const success_msg = req.query.success_msg || '';
+    const error_msg = req.query.error_msg || '';
+    const error = req.query.error || '';
+
     const skill = {
         text: '',
         description: '',
@@ -165,7 +173,7 @@ router.get('/:skillTreeName/add', (req, res) => {
         score: 1,
         icon: ''
     };
-    res.render('add-skill', { skillTreeName, skill, success_msg, error_msg:'', error:'' });
+    res.render('add-skill', { skillTreeName, skill, success_msg, error_msg, error });
 });
 
 // Añadir Skill (POST)
@@ -174,7 +182,6 @@ router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
     const { skillTreeName } = req.params;
 
 
-    console.log("success and error ",success_msg, error_msg);
     const { text, description, tasks, resources, score, icon } = req.body;
     try {
         // Procesar el campo tasks
@@ -203,7 +210,7 @@ router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
             score: parseInt(score) || 1,
             icon: iconPath || null
         });
-        await newSkill.save();
+        /*await skill.save();
         res.redirect(`/skills/${skillTreeName}?success_msg=Skill added successfully`);
 
         await skill.save();
@@ -215,7 +222,19 @@ router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
             description: skill.description,
             set: skill.set
         });
-        res.redirect('/skills');
+        res.redirect('/skills');*/
+
+        await skill.save();
+        console.log('Skill guardado exitosamente con Skill.create:', skill);
+        updateSkillsJson({
+            id: String(skill.id),
+            text: skill.text,
+            icon: skill.icon,
+            description: skill.description,
+            set: skill.set
+        });
+        res.redirect(`/skills?success_msg=Skill added successfully`);
+
     } catch (error) {
         console.error(error);
         // res.status(500).send('Error al crear el Skill.');
@@ -258,10 +277,12 @@ router.post('/:skillTreeName/delete/:skillID', async (req, res) => {
         fs.writeFileSync(skillsPath, JSON.stringify(updatedSkills, null, 2));
 
         // Redireccionar al listado de competencias
-        res.redirect('/skills');
+        res.redirect('/skills?success_msg=Skill deleted successfully');
     } catch (err) {
         res.status(500).render('error', {
-            message: 'Error al eliminar la competencia',
+            //message: 'Error al eliminar la competencia',
+            success_msg: '',
+            error_msg: 'Failed to delete skill',
             error: err
         });
     }
@@ -448,7 +469,7 @@ router.get('/api/skills', async (req, res) => {
 });
 
 // POST /skills/:skillTreeName/delete/:skillID
-router.post('/:skillTreeName/delete/:skillID', async(req, res) =>{
+/*router.post('/:skillTreeName/delete/:skillID', async(req, res) =>{
 
     const { skillTreeName, skillID } = req.params;
     const Skill = req.Skill;
@@ -467,6 +488,6 @@ router.post('/:skillTreeName/delete/:skillID', async(req, res) =>{
         res.status(500).send('Error al eliminar el skill');
     }
 
-});
+});*/
 
 module.exports = router;

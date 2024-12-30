@@ -7,10 +7,20 @@
     <link rel="stylesheet" href="/css/styles.css">
     <script src="/badges.json"></script>
 
+    <script>
+
+        const username = "<%= JSON.stringify(username) %>";
+        const id = "<%= JSON.stringify(id) %>";
+        console.log("user logged in frontend index:", username);
+        console.log("user id in frontend index:", id);
+
+    </script>
 
 
 </head>
 <body>
+
+<%- include('partials/username-display', { title: 'Welcome ', id: id, username: username}) %>
 
 <h1>Range Explanations</h1>
 <table id="leaderboard">

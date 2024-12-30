@@ -146,9 +146,26 @@ router.get('/api/users', async (req, res) => {
 // 7.1.6 GET /admin/users
 router.get('/users', async (req, res) => {
     const User = req.User;
+    const success_msg = req.query.success_msg || '';
+    const error_msg = req.query.error_msg || '';
+    const error = req.query.error || '';
     try {
         const users = await User.find();
-        res.render('admin-users', { users });
+        res.render('admin-users', { users, success_msg, error_msg, error });
+    } catch (error) {
+        res.status(500).send('Error loading users');
+    }
+});
+
+router.get('/change-password',async (req, res) => {
+
+    const User = req.User;
+    const success_msg = req.query.success_msg || '';
+    const error_msg = req.query.error_msg || '';
+    const error = req.query.error || '';
+    try {
+        const users = await User.find();
+        res.render('admin-users', { users, success_msg, error_msg, error });
     } catch (error) {
         res.status(500).send('Error loading users');
     }
@@ -159,20 +176,32 @@ router.post('/change-password', async (req, res) => {
     const { userId, newPassword } = req.body;
     const User = req.User;
 
-    if (!newPassword) {
-        return res.status(400).send('Password is required');
+ /*   if (!newPassword) {
+        //return res.status(400).send('Password is required');
+        return res.redirect('/admin/users?error_msg=Password is required');
     }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).+$/;
+
+    if (!passwordRegex.test(newPassword)) {
+
+        return res.redirect('/admin/users?error_msg=Password must contain at least one uppercase letter, one number, and one special character');
+
+    }*/
 
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).send('User not found');
+            //return res.status(404).send('User not found');
+            return res.redirect('/admin/users?error_msg=User not found');
         }
-        user.password = newPassword;  // Se recomienda que uses un hash para la contraseña
+        user.password = newPassword;
         await user.save();
-        res.json({ message: 'Password changed successfully' });
+        //res.json({ message: 'Password changed successfully' });
+        res.redirect('/admin/users?success_msg=Password changed successfully');
     } catch (error) {
-        res.status(500).send('Error changing password');
+       // res.status(500).send('Error changing password');
+        res.redirect('/admin/users?error_msg=Error changing password');
     }
 });
 

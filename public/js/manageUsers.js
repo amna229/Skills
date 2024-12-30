@@ -70,12 +70,16 @@ async function changeUserPassword(userId, newPassword) {
             body: JSON.stringify({ userId, newPassword }),
         });
         if (response.ok) {
-            alert('Password changed successfully!');
+            //alert('Password changed successfully!');
+            window.location.href = '/admin/users?success_msg=Password changed successfully';
+
         } else {
-            alert('Failed to change password.');
+            //alert('Failed to change password.');
+            window.location.href = '/admin/users?error_msg=Failed to change password';
         }
     } catch (error) {
         console.error('Error changing password:', error);
+        window.location.href = '/admin/users?error_msg=Error changing password';
     }
 }
 
@@ -85,8 +89,25 @@ document.querySelector('button[type="submit"]').addEventListener('click', async 
     const userId = document.getElementById('password').dataset.userId;
 
     if (!newPassword) {
-        alert('Please enter a new password');
+        //alert('Please enter a new password');
+        window.location.href = '/admin/change-password?error_msg=Please enter a password';
         return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).+$/;
+
+
+    if (!passwordRegex.test(newPassword)) {
+
+        window.location.href = '/admin/change-password?error_msg=Password must contain at least one uppercase letter, one number, and one special character and be at least 6 characters long';
+        return;
+    }
+
+    if (newPassword.length < 6) {
+
+        window.location.href = '/admin/change-password?error_msg=Password must contain at least one uppercase letter, one number, and one special character and be at least 6 characters long';
+        return;
+
     }
 
     // Call function to change password

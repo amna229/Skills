@@ -1,5 +1,5 @@
 // Fetch users data from the server
-async function fetchUsers() {
+/*async function fetchUsers() {
     try {
         const response = await fetch('/admin/api/users'); // Correct path to fetch users
         return await response.json();
@@ -7,7 +7,31 @@ async function fetchUsers() {
         console.error('Error fetching users:', error);
         return [];
     }
+}*/
+
+async function fetchUsers() {
+    try {
+        const response = await fetch('/admin/api/users');
+        if (!response.ok) {
+            throw new Error('Error fetching users from /admin/api/users');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        // Intentar con la segunda URL en caso de error
+        try {
+            const response2 = await fetch('/users/api/users');
+            if (!response2.ok) {
+                throw new Error('Error fetching users from /users/api');
+            }
+            return await response2.json();
+        } catch (error2) {
+            console.error('Error fetching users from /users/api:', error2);
+            return [];
+        }
+    }
 }
+
 
 // Fetch badges data from the server
 async function fetchBadges() {

@@ -17,14 +17,14 @@ async function getUserCount() {
 }
 
 //GET /users/register
-router.get('/register', (req, res) => {
+/*router.get('/register', (req, res) => {
 
   const success_msg = req.query.success_msg || '';
   const error_msg = req.query.error_msg || '';
   const error = req.query.error || '';
 
     res.render('register', { success_msg, error_msg, error });
-});
+});*/
 
 
 // POST /users/register
@@ -33,29 +33,35 @@ router.post('/register', async (req, res) => {
 
   // Validaciones
   if (!username || !password || !password2) {
-    return res.render('register', { error: 'Todos los campos son obligatorios.' });
+    //return res.render('register', { error: 'Todos los campos son obligatorios.' });
+    return res.redirect('/users/register?error_msg=All fields are required');
   }
 
   const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).+$/;
 
   if (!passwordRegex.test(password)) {
-    return res.render('register', { error: 'La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial' });
+    //return res.render('register', { error: 'La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial' });
+    return res.redirect('/users/register?error_msg=Password must contain at least one uppercase letter, one number and one special character');
   }
 
   if (password !== password2) {
-    return res.render('register', { error: 'Las contraseñas no coinciden.' });
+   // return res.render('register', { error: 'Las contraseñas no coinciden.' });
+    return res.redirect('/users/register?error_msg=Passwords do not match');
   }
   if (password.length < 6) {
-    return res.render('register', { error: 'La contraseña debe tener al menos 6 caracteres.' });
+    //return res.render('register', { error: 'La contraseña debe tener al menos 6 caracteres.' });
+    return res.redirect('/users/register?error_msg=Password must be at least 6 characters long');
   }
 
   // Verificar si el nombre de usuario ya existe
   const isUnique = await isUsernameUnique(username);
   if (!isUnique) {
-    res.render('register', {
-      error: 'El nombre de usuario ya está en uso',
-      redirectTo: '/login'
+    res.render('login', {
+      success_msg: '',
+      error_msg: 'Username already in use',
+      error: '',
     });
+
     return;
   }
 
@@ -78,21 +84,9 @@ router.post('/register', async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.render('register', { error: 'Hubo un error al registrar al usuario.' });
+    //res.render('register', { error: 'Hubo un error al registrar al usuario.' });
+    res.redirect('/users/register?error_msg=An error occurred registering the user');
   }
-});
-
-
-
-
-//GET /users/login
-router.get('/login', (req, res) => {
-
-  const success_msg = req.query.success_msg || '';
-  const error_msg = req.query.error_msg || '';
-  const error = req.query.error || '';
-
-  res.render('login', { success_msg, error_msg, error });
 });
 
 // POST /users/login
@@ -101,20 +95,23 @@ router.post('/login', async (req, res) => {
 
   // Verificar que ambos campos estén presentes
   if (!username || !password) {
-    return res.render('login', { error: 'Por favor, ingresa tu nombre de usuario y contraseña.' });
+   // return res.render('login', { error: 'Por favor, ingresa tu nombre de usuario y contraseña.' });
+    return res.redirect('/users/login?error_msg=Please enter your username and password');
   }
 
   try {
     // Buscar el usuario en la base de datos
     const user = await User.findOne({ username: username.toLowerCase() });
     if (!user) {
-      return res.render('login', { error: 'Usuario no encontrado.' });
+     // return res.render('login', { error: 'Usuario no encontrado.' });
+        return res.redirect('/users/login?error_msg=User not found');
     }
 
     // Comparar las contraseñas utilizando bcrypt
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.render('login', { error: 'Contraseña incorrecta.' });
+      //return res.render('login', { error: 'Contraseña incorrecta.' });
+        return res.redirect('/users/login?error_msg=Incorrect password ');
     }
 
     // Iniciar la sesión del usuario
@@ -129,7 +126,8 @@ router.post('/login', async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error del servidor.');
+    //res.status(500).send('Error del servidor.');
+    res.redirect('/users/login?error=Server error');
   }
 });
 
@@ -139,13 +137,19 @@ router.post('/login', async (req, res) => {
 router.get('/logout', (req, res) => {
   if (req.session) {
     // Destruye la sesión
-    req.session.mensajeLogout = 'You have logged out successfully.';
+    //req.session.mensajeLogout = 'You have logged out successfully.';
+
+    const success_msg = req.query.success_msg || '';
+    const error_msg = req.query.error_msg || '';
+    const error = req.query.error || '';
+
     req.session.destroy(err => {
       if (err) {
         console.error("Error al cerrar sesión: ", err);
         res.redirect('/skills'); // Redirigir a la página principal en caso de error
       }else{
-        res.redirect('/users/login?mensajeLogout=You+have+logged+out+successfully.');
+        //res.redirect('/users/login?mensajeLogout=You+have+logged+out+successfully.');
+        res.redirect('/skills?success_msg=You have logged out successfully');
       }
     });
   } else {
@@ -168,6 +172,34 @@ router.get('/logout', (req, res) => {
   }
 });**/
 
+/*router.get('/leaderboard', async (req, res) => {
+  try {
+    const users = await User.find();
+
+    res.render('leaderboard', {
+      title: 'Welcome, ' + req.session.user.username,
+      username: req.session.user.username, // Pass username to the template
+      id: req.session.user._id,
+      isAdmin: req.session.user.admin || false,
+      users,
+    });
+  } catch (error) {
+    console.error('Error loading leaderboard:', error);
+    res.status(500).send('Error loading leaderboard');
+  }
+});*/
+
+
+router.get('/api/users', async (req, res) => {
+  const User = req.User;
+  try {
+    const users = await User.find(); // Obtén los usuarios desde la base de datos
+    res.json(users); // Devuelve los usuarios en formato JSON
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).send('Error fetching users');
+  }
+});
 
 router.get('/leaderboard', async (req, res) => {
   if (!req.session.user) {
@@ -181,7 +213,7 @@ router.get('/leaderboard', async (req, res) => {
     res.render('users-leaderboard', {
       title: 'Welcome, ' + req.session.user.username,
       username: req.session.user.username, // Pass username to the template
-      id: req.session.user._id,
+      id: req.session.user.id,
       isAdmin: req.session.user.admin || false,
       badges,
       users
