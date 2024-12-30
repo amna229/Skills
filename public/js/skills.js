@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+    const isAdmin = window.isAdmin;
+    console.log("isAdmin in window: ", isAdmin);
+
+    fetch('/skills.json')
+  
     // Fetch skills from the server
     fetch('/skills/api/skills')
         .then(r => r.json())
@@ -106,9 +112,48 @@ document.addEventListener("DOMContentLoaded", () => {
                 pencilIcon.src = '../electronics/pencil.svg';
                 notebookIcon.src = '../electronics/notebook.svg';
 
-                pencilIcon.onload = () => {
-                    context.drawImage(pencilIcon, 10, 70, 20, 20);
-                };
+
+                if(isAdmin==="true"){
+
+                    pencilIcon.onload = () => {
+                        context.drawImage(pencilIcon, 10, 70, 20, 20);
+
+                        canvas.addEventListener("click", (event) => {
+
+                            const rect = canvas.getBoundingClientRect();
+                            const scaleX = canvas.width / rect.width;
+                            const scaleY = canvas.height / rect.height;
+                            const x = (event.clientX - rect.left) * scaleX;
+                            const y = (event.clientY - rect.top) * scaleY;
+
+                            const pencilBounds = {
+                                x: 10,
+                                y: 70,
+                                width: 20,
+                                height: 20
+                            };
+
+                            const whenClickP = x >= pencilBounds.x && x <= pencilBounds.x + pencilBounds.width && y >= pencilBounds.y && y <= pencilBounds.y + pencilBounds.height;
+
+                            if (whenClickP) {
+                                const isVerified = polygon.classList.contains("hexagon-completed-skill");
+                                if (!isVerified) {
+                                    localStorage.setItem('actSkill', skill.id);
+                                    const svgData = new XMLSerializer().serializeToString(svg);
+                                    localStorage.setItem(`skillsvg${skill.id}`, svgData);
+                                    // Aquí construimos la URL correctamente
+                                    const skillTreeName = skill.set; // O obtenerlo dinámicamente si es necesario
+                                    const skillID = skill.id;
+                                    localStorage.setItem('actSkill', skillID);
+                                    const url = `/skills/${skillTreeName}/edit/${skillID}`;
+                                    window.open(url, '_blank');  // Abrir la página en una nueva pestaña
+                                }
+                            }
+                        });
+                    };
+
+                }
+
 
                 notebookIcon.onload = () => {
                     context.drawImage(notebookIcon, 70, 70, 20, 20);

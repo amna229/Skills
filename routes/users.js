@@ -6,7 +6,7 @@ const Badge = require('../models/badge');
 
 // Función para verificar si el nombre de usuario es único
 async function isUsernameUnique(username) {
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ username: username.toLowerCase() });
   return !user;
 }
 
@@ -15,6 +15,16 @@ async function getUserCount() {
   const count = await User.countDocuments();
   return count;
 }
+
+//GET /users/register
+router.get('/register', (req, res) => {
+
+  const success_msg = req.query.success_msg || '';
+  const error_msg = req.query.error_msg || '';
+  const error = req.query.error || '';
+
+    res.render('register', { success_msg, error_msg, error });
+});
 
 
 // POST /users/register
@@ -25,6 +35,13 @@ router.post('/register', async (req, res) => {
   if (!username || !password || !password2) {
     return res.render('register', { error: 'Todos los campos son obligatorios.' });
   }
+
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).+$/;
+
+  if (!passwordRegex.test(password)) {
+    return res.render('register', { error: 'La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial' });
+  }
+
   if (password !== password2) {
     return res.render('register', { error: 'Las contraseñas no coinciden.' });
   }
@@ -35,24 +52,48 @@ router.post('/register', async (req, res) => {
   // Verificar si el nombre de usuario ya existe
   const isUnique = await isUsernameUnique(username);
   if (!isUnique) {
-    return res.render('register', { error: 'El nombre de usuario ya está en uso.' });
+    res.render('register', {
+      error: 'El nombre de usuario ya está en uso',
+      redirectTo: '/login'
+    });
+    return;
   }
 
   try {
     // Verificar si es el primer usuario
     const userCount = await getUserCount();
     const admin = userCount === 0;  // El primer usuario registrado será un administrador
-    // Registrar usuario
-    const newUser = new User({ username, password, admin });
+    const newUser = new User({ username: username.toLowerCase(), password, admin });
     await newUser.save();
 
-    res.redirect('/users/login');  // Redirigir al login después del registro exitoso
+    // Iniciar la sesión del usuario
+    // Almacenar el usuario en la sesión
+    req.session.user = {
+      id: newUser._id,
+      username: newUser.username,
+      admin: newUser.admin // Guardar la propiedad 'admin' en la sesión
+    };
+
+    res.redirect('/skills?success_msg=You have registered successfully');
+
   } catch (err) {
     console.error(err);
     res.render('register', { error: 'Hubo un error al registrar al usuario.' });
   }
 });
 
+
+
+
+//GET /users/login
+router.get('/login', (req, res) => {
+
+  const success_msg = req.query.success_msg || '';
+  const error_msg = req.query.error_msg || '';
+  const error = req.query.error || '';
+
+  res.render('login', { success_msg, error_msg, error });
+});
 
 // POST /users/login
 router.post('/login', async (req, res) => {
@@ -65,7 +106,7 @@ router.post('/login', async (req, res) => {
 
   try {
     // Buscar el usuario en la base de datos
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username: username.toLowerCase() });
     if (!user) {
       return res.render('login', { error: 'Usuario no encontrado.' });
     }
@@ -84,13 +125,15 @@ router.post('/login', async (req, res) => {
       admin: user.admin // Guardar la propiedad 'admin' en la sesión
     };
 
-    res.redirect('/skills');
+    res.redirect('/skills?success_msg=You have logged in successfully');
 
   } catch (err) {
     console.error(err);
     res.status(500).send('Error del servidor.');
   }
 });
+
+
 
 // Endpoint para cerrar sesión
 router.get('/logout', (req, res) => {
@@ -125,6 +168,7 @@ router.get('/logout', (req, res) => {
   }
 });**/
 
+
 router.get('/leaderboard', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/users/login');
@@ -137,6 +181,8 @@ router.get('/leaderboard', async (req, res) => {
     res.render('users-leaderboard', {
       title: 'Welcome, ' + req.session.user.username,
       username: req.session.user.username, // Pass username to the template
+      id: req.session.user._id,
+      isAdmin: req.session.user.admin || false,
       badges,
       users
     });
@@ -145,6 +191,7 @@ router.get('/leaderboard', async (req, res) => {
     res.status(500).send('Error loading leaderboard');
   }
 });
+
 
 router.get('/current-user', (req, res) => {
   if (req.session.user) {

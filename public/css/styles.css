@@ -500,3 +500,12 @@ button:hover {
 .container-edit input{
     margin-bottom: 10px;
 }
+
+.messages {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 100px;
+    z-index: 9999;
+    display: flex;
+}

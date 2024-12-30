@@ -1,0 +1,38 @@
+<div>
+
+    <% if (success_msg){ %>
+
+        <div class="alert alert-success" id="successMsg" style="width: 50%; text-align: center;">
+            <%= success_msg %>
+        </div>
+
+        <% } else if (error_msg){ %>
+
+            <div class="alert alert-danger" id="errorMsg" style="width: 50%; text-align: center;">
+                <%= error_msg %>
+            </div>
+
+        <% } else if (error){ %>
+
+            <div class="alert alert-danger" id="errorMsg" style="width: 50%; text-align: center;">
+                <%= error %>
+            </div>
+        <% }%>
+
+</div>
+
+<script>
+
+    setTimeout(function() {
+        var successMsg = document.getElementById("successMsg");
+        var errorMsg = document.getElementById("errorMsg");
+
+        if (successMsg) {
+            successMsg.style.display = 'none';
+        }
+        if (errorMsg) {
+            errorMsg.style.display = 'none';
+        }
+    }, 3000);
+
+</script>

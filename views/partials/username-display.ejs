@@ -1,0 +1,26 @@
+
+<header>
+<% if (id!=null){ %>
+
+    <nav>
+
+        <h1><%= title + username + '!' %> | Skill Trees: </h1>
+
+        <a href="/skills">Arboles de competencias (68)</a> |
+        <a href="/users/leaderboard">LeaderBoard</a> |
+        <a href="/about">About</a> |
+        <a href="/users/logout">Logout</a> |
+
+    </nav>
+
+<%  }else { %>
+
+    <h1><%= title +'!'%> | Skill Trees: </h1>
+
+    <nav>
+        <a href="/users/login">Login</a> |
+        <a href="/about">About</a> |
+    </nav>
+
+<% } %>
+</header>

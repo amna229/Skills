@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require("mongoose");
 var router = express.Router();
+const Skill = require('../models/skill');
+const UserSkill = require('../models/userSkill');
 
 // Ruta al archivo skills.json
 const skillsJsonPath = path.join(__dirname, '../scripts/skills.json');
@@ -48,8 +50,16 @@ function updateSkillsJson(newSkill) {
 }
 
 router.get('/', function(req, res, next) {
-    const isAdmin = req.session.user.admin;
-    res.render('index', { isAdmin });
+  
+    // const isAdmin = req.session.user && req.session.user.admin ? req.session.user.admin : false;
+
+    const {id=null, username=null, isAdmin=req.session.user && req.session.user.admin ? req.session.user.admin : false} = req.session.user || {};
+
+    const success_msg = req.query.success_msg || '';
+    const error_msg = req.query.error_msg || '';
+    const error = req.query.error || '';
+
+    res.render('index', { id, username, isAdmin, success_msg, error_msg, error });
 });
 
 // Ruta para mostrar el formulario de edición de un Skill
@@ -144,29 +154,27 @@ router.post('/:skillTreeName/edit/:skillID', upload.single('icon'), async (req, 
 });
 
 // Formulario para añadir Skill (GET)
-router.get('/:skillTreeName/add', async (req, res) => {
-    try{
-        const skillId = req.query.skillId; // Suponiendo que el skill ID se pasa como query string
-        const { skillTreeName } = req.params;
-        const skill = {
-            text: '',
-            description: '',
-            tasks: [],
-            resources: [],
-            score: 1,
-            icon: ''
-        };
-        res.render('add-skill', { skill, skillTreeName });
-    } catch (e) {
-        console.error('Error al cargar el formulario de añadir skill:', e);
-        res.status(500).send('Error interno del servidor');
-    }
+router.get('/:skillTreeName/add', (req, res) => {
+    const { skillTreeName } = req.params;
+    const success_msg = req.query.success_msg || '';
+    const skill = {
+        text: '',
+        description: '',
+        tasks: [],
+        resources: [],
+        score: 1,
+        icon: ''
+    };
+    res.render('add-skill', { skillTreeName, skill, success_msg, error_msg:'', error:'' });
 });
 
 // Añadir Skill (POST)
 router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
     const Skill = req.Skill;
     const { skillTreeName } = req.params;
+
+
+    console.log("success and error ",success_msg, error_msg);
     const { text, description, tasks, resources, score, icon } = req.body;
     try {
         // Procesar el campo tasks
@@ -195,6 +203,9 @@ router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
             score: parseInt(score) || 1,
             icon: iconPath || null
         });
+        await newSkill.save();
+        res.redirect(`/skills/${skillTreeName}?success_msg=Skill added successfully`);
+
         await skill.save();
         console.log('Skill guardado exitosamente con Skill.create:', skill);
         updateSkillsJson({
@@ -207,7 +218,16 @@ router.post('/:skillTreeName/add', upload.single('icon'), async (req, res) => {
         res.redirect('/skills');
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error al crear el Skill.');
+        // res.status(500).send('Error al crear el Skill.');
+
+        res.render('add-skill', {
+            skillTreeName,
+            skill: { text, description, tasks, resources, score, icon },
+            success_msg: '',
+            error_msg: 'Failed to add skill',
+            error: error.message
+        });
+
     }
 });
 
@@ -425,6 +445,28 @@ router.get('/api/skills', async (req, res) => {
         console.error('Error fetching skills:', error);
         res.status(500).json({ error: 'Failed to fetch skills' });
     }
+});
+
+// POST /skills/:skillTreeName/delete/:skillID
+router.post('/:skillTreeName/delete/:skillID', async(req, res) =>{
+
+    const { skillTreeName, skillID } = req.params;
+    const Skill = req.Skill;
+
+    try {
+        const skill = await Skill.findOne({ id: skillID, set: skillTreeName });
+        if (!skill) {
+            return res.status(404).send('Skill no encontrado');
+        }
+
+        await skill.remove();
+        res.redirect(`/skills/${skillTreeName}`);
+
+    } catch (error) {
+        console.error('Error al eliminar el skill:', error);
+        res.status(500).send('Error al eliminar el skill');
+    }
+
 });
 
 module.exports = router;

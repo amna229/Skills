@@ -6,12 +6,36 @@
     <title>Leaderboard</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script src="/badges.json"></script>
+
+
     <script>
-        const loggedInUsername = "<%= username %>"; // Expose the variable globally
+        const isAdmin = "<%= JSON.stringify(isAdmin) %>";
+        console.log("isAdmin in frontend:", isAdmin);
+
+        window.isAdmin = "<%= JSON.stringify(isAdmin) %>";
+        console.log("isAdmin window in frontend:", window.isAdmin);
+
+        const username = "<%= JSON.stringify(username) %>";
+        const id = "<%= JSON.stringify(id) %>";
+        console.log("user logged in frontend index:", username);
     </script>
+
 </head>
 <body>
-<%- include('partials/header', { title: 'Welcome, admin!'}) %>
+
+<% if(isAdmin){ %>
+
+    <%- include('partials/header', { title: 'Welcome, admin!'}) %>
+    <h1>ELECTRONICS</h1>
+    <div class="buttonAdd-container">
+        <a href="/skills/electronics/add" class="default-buttons">Add new skill</a>
+    </div>
+
+<% } else{ %>
+
+    <%- include('partials/username-display', { title: 'Welcome ', id: id, username: username}) %>
+
+<% } %>
 
 <h1>Leaderboard</h1>
 <div id="leaderboard-container">
@@ -30,8 +54,23 @@
         </tbody>
     </table>
 </div>
-
 <script src="/js/users-leaderboard.js"></script>
+
+
+<br><br>
+<h1>Range Explanations</h1>
+<table id="leaderboard">
+    <thead>
+    <tr>
+        <th>Range</th>
+        <th>Badge</th>
+        <th>Required Bitpoints</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script src="/js/leaderBoard.js"></script>
+
 </body>
 </html>
-

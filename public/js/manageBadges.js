@@ -57,6 +57,84 @@ function createLeaderboardRow(badge){
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.classList.add('delete-buttons');
+    //deleteButton.setAttribute('data-id', badgeId);
+
+    deleteButton.addEventListener('click', async (event) => {
+        console.log('Deleting badge with ID:', badge._id);  // Verifica que el ID esté correcto
+        const badgeId = badge._id;  // Usamos directamente `badge._Id`
+        const confirmation = confirm(`Are you sure you want to delete the badge "${badge.name}"?`);
+
+        if (confirmation) {
+            try {
+                console.log("Attempting to delete badge with ID:", badgeId);
+                const response = await fetch(`/admin/badges/delete/${badgeId}`, {
+                    method: 'POST',
+                });
+
+                console.log("Response:", response);
+                if (!response.ok) {
+                    alert('Error deleting badge');
+                } else {
+                    window.location.href = '/admin/badges?success_msg=Badge deleted successfully';
+                }
+            } catch (error) {
+                console.error('Error deleting badge:', error);
+                alert('Error deleting badge');
+            }
+        }
+    });
+
+    /*deleteButton.addEventListener('click', async () => {
+        const confirmDelete = confirm(`Are you sure you want to delete the badge "${badge.name}"?`);
+        if (confirmDelete) {
+            try {
+                const response = await fetch(`/admin/badges/delete/${badge._id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    row.remove();
+                } else {
+                    alert(result.error || 'Failed to delete the badge');
+                }
+            } catch (error) {
+                console.error('Error deleting badge:', error);
+                alert('Error deleting badge. Please try again.');
+            }
+        }
+    });*/
+
+  /*  deleteButton.addEventListener('click', async () => {
+        const confirmDelete = confirm(`Are you sure you want to delete the badge "${badge.name}"?`);
+        if (confirmDelete) {
+            try {
+                const response = await fetch(`/admin/badges/delete/${badge._id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Redirigir con un mensaje de éxito
+                   // window.location.href = `/admin/badges?success_msg=${encodeURIComponent(result.message)}`;
+                    row.remove();  // Elimina la fila de la tabla (si lo deseas)
+                } else {
+                    // Redirigir con un mensaje de error
+                    //window.location.href = `/admin/badges?error_msg=${encodeURIComponent(result.error || 'Failed to delete the badge')}`;
+                }
+            } catch (error) {
+                console.error('Error deleting badge:', error);
+                // Redirigir con un mensaje de error
+                //window.location.href = `/admin/badges?error_msg=Error deleting badge. Please try again`;
+            }
+        }
+    });*/
+
+
+
+
 
     actionsCell.appendChild(deleteButton);
     row.appendChild(actionsCell);

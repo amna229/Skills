@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 
+
 // Models
 const Skill = require('./models/skill');
 const User = require('./models/user');
@@ -35,6 +36,7 @@ var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
 
 var app = express();
+
 
 const resetSkillsCollection = async () => {
   try {
@@ -95,6 +97,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(bodyParser.json());
+
+
 
 // Middleware para manejar sesiones
 app.use(session({
@@ -174,5 +178,6 @@ app.use(function(err, req, res, next) {
     error: res.locals.error  // Pasamos el objeto error a la vista
   });
 });
+
 
 module.exports = app;
